@@ -66,10 +66,20 @@ try
                 h.Password(rabbitPass);
             });
 
-            // Configure consumers
+            // Configure consumers - bind to Node.js appointment-events exchange
             cfg.ReceiveEndpoint("billing-service-appointment-queue", e =>
             {
+                // Accept raw JSON from Node.js
+                e.DefaultContentType = new System.Net.Mime.ContentType("application/json");
+                e.UseRawJsonDeserializer(RawSerializerOptions.AnyMessageType);
+
                 e.ConfigureConsumer<AppointmentCreatedConsumer>(context);
+
+                // Bind to the simple fanout exchange from Node.js Appointment Service
+                e.Bind("appointment-events", x =>
+                {
+                    x.ExchangeType = "fanout";
+                });
             });
         });
     });
