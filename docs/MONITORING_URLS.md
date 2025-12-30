@@ -13,16 +13,17 @@ Once all services are running, access these dashboards in your browser:
 | **RabbitMQ Management** | http://localhost:15672 | admin / admin123 | Message queue monitoring |
 | **Consul** | http://localhost:8500 | None | Service discovery and health |
 | **Redis Commander** | http://localhost:8081 | None | Browse Redis cache data |
+| **Mongo Express** | http://localhost:8082 | None | Browse MongoDB databases and collections |
 
 ## 📊 Infrastructure Ports
 
-| Service | Port | Protocol |
-|---------|------|----------|
-| SQL Server | 1433 | TCP |
-| MongoDB | 27017 | TCP |
-| Redis | 6379 | TCP |
-| RabbitMQ (AMQP) | 5672 | TCP |
-| Consul (HTTP) | 8500 | HTTP |
+| Service | Port | Protocol | Credentials |
+|---------|------|----------|-------------|
+| SQL Server | 1434 | TCP | sa / StrongPassword123! |
+| MongoDB | 27017 | TCP | admin / admin123 |
+| Redis | 6379 | TCP | None |
+| RabbitMQ (AMQP) | 5672 | TCP | admin / admin123 |
+| Consul (HTTP) | 8500 | HTTP | None |
 
 ## ✅ Verify Infrastructure is Running
 
