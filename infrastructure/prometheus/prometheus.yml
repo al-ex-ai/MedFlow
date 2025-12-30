@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'patient-service'
+    static_configs:
+      - targets: ['patient-service-1:8080', 'patient-service-2:8080']
+    metrics_path: '/metrics'
+
+  - job_name: 'appointment-service'
+    static_configs:
+      - targets: ['appointment-service-1:3000', 'appointment-service-2:3000']
+    metrics_path: '/metrics'
+
+  - job_name: 'billing-service'
+    static_configs:
+      - targets: ['billing-service-1:8080']
+    metrics_path: '/metrics'
+
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['notification-service-1:8080']
+    metrics_path: '/metrics'
