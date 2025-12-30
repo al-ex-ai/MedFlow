@@ -9,36 +9,27 @@ const consumePatientEvents = async () => {
       return;
     }
 
-    const exchangeName = 'patient-events';
+    // MassTransit uses message type-based exchange names
+    // PatientCreatedEvent in namespace PatientService.API.Events
+    const exchangeName = 'PatientService.API.Events:PatientCreatedEvent';
     const queueName = 'appointment-service-patient-queue';
 
     await channel.assertExchange(exchangeName, 'fanout', { durable: true });
     await channel.assertQueue(queueName, { durable: true });
     await channel.bindQueue(queueName, exchangeName, '');
 
-    logger.info(`Waiting for patient events on queue: ${queueName}`);
+    logger.info(`Waiting for PatientCreated events on queue: ${queueName}`);
 
     channel.consume(queueName, async (msg) => {
       if (msg !== null) {
         try {
           const event = JSON.parse(msg.content.toString());
-          logger.info(`Received event: ${event.eventType}`);
 
-          // Handle different event types
-          switch (event.eventType) {
-            case 'PatientCreated':
-              logger.info(`Patient created: ${event.data.patientId} - ${event.data.firstName} ${event.data.lastName}`);
-              // Here you could update local cache or perform other actions
-              break;
-            case 'PatientUpdated':
-              logger.info(`Patient updated: ${event.data.patientId}`);
-              break;
-            case 'PatientDeleted':
-              logger.info(`Patient deleted: ${event.data.patientId}`);
-              break;
-            default:
-              logger.warn(`Unknown event type: ${event.eventType}`);
-          }
+          // MassTransit wraps the message in a message envelope
+          const messageData = event.message || event;
+
+          logger.info(`Received PatientCreated event: ${messageData.patientId || messageData.PatientId}`);
+          logger.info(`Patient: ${messageData.firstName || messageData.FirstName} ${messageData.lastName || messageData.LastName}`);
 
           channel.ack(msg);
         } catch (error) {
