@@ -6,6 +6,9 @@ import AppLayout from './components/Layout/AppLayout';
 import ProtectedRoute from './components/Layout/ProtectedRoute';
 import Login from './pages/Login';
 import PatientDashboard from './pages/Patient/Dashboard';
+import Appointments from './pages/Patient/Appointments';
+import Invoices from './pages/Patient/Invoices';
+import Notifications from './pages/Patient/Notifications';
 
 function App() {
   return (
@@ -25,9 +28,9 @@ function App() {
               }
             >
               <Route index element={<PatientDashboard />} />
-              <Route path="appointments" element={<div>Appointments Page (Coming Soon)</div>} />
-              <Route path="invoices" element={<div>Invoices Page (Coming Soon)</div>} />
-              <Route path="notifications" element={<div>Notifications Page (Coming Soon)</div>} />
+              <Route path="appointments" element={<Appointments />} />
+              <Route path="invoices" element={<Invoices />} />
+              <Route path="notifications" element={<Notifications />} />
             </Route>
 
             {/* Admin Routes */}
