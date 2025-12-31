@@ -1,3 +1,6 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add YARP Reverse Proxy
@@ -15,16 +18,89 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add health checks
-builder.Services.AddHealthChecks();
+// Get connection strings from configuration
+var sqlConnection = builder.Configuration.GetConnectionString("SqlServer")
+    ?? "Server=localhost,1434;Database=master;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=true";
+var mongoConnection = builder.Configuration.GetConnectionString("MongoDB")
+    ?? "mongodb://admin:admin123@localhost:27017";
+var redisConnection = builder.Configuration.GetConnectionString("Redis")
+    ?? "localhost:6379";
+var rabbitConnection = builder.Configuration.GetConnectionString("RabbitMQ")
+    ?? "amqp://admin:admin123@localhost:5672";
+
+// Add health checks for infrastructure
+builder.Services.AddHealthChecks()
+    .AddSqlServer(
+        sqlConnection,
+        name: "sqlserver",
+        tags: ["database", "infrastructure"])
+    .AddMongoDb(
+        sp => new MongoDB.Driver.MongoClient(mongoConnection),
+        name: "mongodb",
+        tags: ["database", "infrastructure"])
+    .AddRedis(
+        redisConnection,
+        name: "redis",
+        tags: ["cache", "infrastructure"])
+    .AddRabbitMQ(
+        sp =>
+        {
+            var factory = new RabbitMQ.Client.ConnectionFactory
+            {
+                Uri = new Uri(rabbitConnection)
+            };
+            return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+        },
+        name: "rabbitmq",
+        tags: ["messaging", "infrastructure"])
+    // Microservices health endpoints
+    .AddUrlGroup(
+        new Uri("http://localhost:5025/health"),
+        name: "patient-service",
+        tags: ["service"])
+    .AddUrlGroup(
+        new Uri("http://localhost:5026/health"),
+        name: "appointment-service",
+        tags: ["service"])
+    .AddUrlGroup(
+        new Uri("http://localhost:5056/health"),
+        name: "billing-service",
+        tags: ["service"])
+    .AddUrlGroup(
+        new Uri("http://localhost:5060/health"),
+        name: "notification-service",
+        tags: ["service"]);
+
+// Add Health Checks UI
+builder.Services.AddHealthChecksUI(options =>
+{
+    options.SetEvaluationTimeInSeconds(30); // Check every 30 seconds
+    options.MaximumHistoryEntriesPerEndpoint(50); // Keep 50 entries per endpoint
+    options.SetApiMaxActiveRequests(1); // Limit concurrent requests
+
+    // Add health check endpoint
+    options.AddHealthCheckEndpoint("Healthcare Microservices", "/health");
+})
+.AddInMemoryStorage();
 
 var app = builder.Build();
 
 // Use CORS
 app.UseCors("AllowAll");
 
-// Map health endpoint
-app.MapHealthChecks("/health");
+// Map health endpoint with detailed response
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+// Map Health Checks UI at /healthchecks-ui
+app.MapHealthChecksUI(options =>
+{
+    options.UIPath = "/healthchecks-ui";
+    options.ApiPath = "/healthchecks-api";
+});
 
 // Map YARP reverse proxy
 app.MapReverseProxy();

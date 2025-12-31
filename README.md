@@ -22,7 +22,7 @@ A production-ready distributed microservices architecture demonstrating enterpri
 - **Metrics** - Prometheus (http://localhost:9090)
 - **Dashboards** - Grafana (http://localhost:3001)
 - **Tracing** - Jaeger (http://localhost:16686)
-- **Health Checks** - Health UI (http://localhost:5010)
+- **Health Checks** - Health UI (http://localhost:5000/healthchecks-ui)
 - **RabbitMQ Management** - http://localhost:15672
 - **Consul UI** - http://localhost:8500
 - **Redis Commander** - http://localhost:8081
