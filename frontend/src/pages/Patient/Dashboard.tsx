@@ -37,6 +37,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import dayjs, { Dayjs } from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentService } from '../../services/appointmentService';
 import { billingService } from '../../services/billingService';
@@ -73,6 +74,7 @@ function AppointmentDay(
 
 const PatientDashboard: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -305,7 +307,7 @@ const PatientDashboard: React.FC = () => {
               <Typography variant="h6" fontWeight={600}>
                 Appointment Calendar
               </Typography>
-              <Button endIcon={<ArrowForward />} size="small">
+              <Button endIcon={<ArrowForward />} size="small" onClick={() => navigate('/patient/appointments')}>
                 View All
               </Button>
             </Box>
@@ -433,7 +435,7 @@ const PatientDashboard: React.FC = () => {
               <Typography variant="h6" fontWeight={600}>
                 Recent Invoices
               </Typography>
-              <Button endIcon={<ArrowForward />} size="small">
+              <Button endIcon={<ArrowForward />} size="small" onClick={() => navigate('/patient/invoices')}>
                 View All
               </Button>
             </Box>
