@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using BillingService.API.Data;
 using BillingService.API.Services;
 using BillingService.API.Consumers;
+using BillingService.API.Events;
 using Serilog;
 using Serilog.Events;
 using StackExchange.Redis;
@@ -66,6 +67,13 @@ try
                 h.Password(rabbitPass);
             });
 
+            // Configure the InvoiceCreatedEvent to publish to "InvoiceCreated" fanout exchange
+            cfg.Message<InvoiceCreatedEvent>(x => x.SetEntityName("InvoiceCreated"));
+            cfg.Publish<InvoiceCreatedEvent>(x => x.ExchangeType = "fanout");
+
+            // Use raw JSON serializer for cross-service compatibility
+            cfg.UseRawJsonSerializer(RawSerializerOptions.All);
+
             // Configure consumers - bind to Node.js appointment-events exchange
             cfg.ReceiveEndpoint("billing-service-appointment-queue", e =>
             {
@@ -113,7 +121,8 @@ try
     {
         var db = scope.ServiceProvider.GetRequiredService<BillingDbContext>();
         Log.Information("Applying database migrations...");
-        db.Database.Migrate();
+        db.Database.EnsureDeleted(); // Drop old tables
+        db.Database.Migrate(); // Apply migrations with correct schema
         Log.Information("Database migrations applied successfully");
     }
 

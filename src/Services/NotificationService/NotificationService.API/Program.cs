@@ -1,5 +1,6 @@
 using NotificationService.API.Data;
 using NotificationService.API.Consumers;
+using NotificationService.API.Events;
 using Serilog;
 using Serilog.Events;
 using MassTransit;
@@ -34,12 +35,6 @@ try
     builder.Services.AddOpenApi();
 
     // MongoDB
-    var mongoSettings = new MongoDbSettings
-    {
-        ConnectionString = builder.Configuration["MongoDb:ConnectionString"] ?? "mongodb://admin:admin123@localhost:27017",
-        DatabaseName = builder.Configuration["MongoDb:DatabaseName"] ?? "NotificationDb"
-    };
-    builder.Services.AddSingleton(mongoSettings);
     builder.Services.AddSingleton<NotificationDbContext>();
 
     // MassTransit with RabbitMQ
@@ -77,18 +72,32 @@ try
                 });
             });
 
-            // Configure consumer for Invoice events from Billing Service (.NET/MassTransit)
+            // Map BillingService message type to our local type
+            cfg.Message<InvoiceCreatedEvent>(x => x.SetEntityName("InvoiceCreated"));
+
+            // Configure consumer for Invoice events from Billing Service (.NET MassTransit format)
             cfg.ReceiveEndpoint("notification-service-invoice-queue", e =>
             {
+                // Use raw JSON deserializer to accept messages from BillingService regardless of namespace
+                e.DefaultContentType = new System.Net.Mime.ContentType("application/json");
+                e.UseRawJsonDeserializer(RawSerializerOptions.AnyMessageType);
+
                 e.ConfigureConsumer<InvoiceCreatedConsumer>(context);
+
+                // Bind to the "InvoiceCreated" exchange
+                e.Bind("InvoiceCreated", x =>
+                {
+                    x.ExchangeType = "fanout";
+                });
             });
         });
     });
 
     // Health Checks
+    var mongoConnectionString = builder.Configuration["MongoDB:ConnectionString"] ?? "mongodb://admin:admin123@localhost:27017";
     builder.Services.AddHealthChecks()
         .AddMongoDb(
-            _ => new MongoDB.Driver.MongoClient(mongoSettings.ConnectionString),
+            _ => new MongoDB.Driver.MongoClient(mongoConnectionString),
             name: "mongodb",
             tags: new[] { "db", "mongodb" });
 
