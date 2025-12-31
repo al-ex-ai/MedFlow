@@ -121,8 +121,7 @@ try
     {
         var db = scope.ServiceProvider.GetRequiredService<BillingDbContext>();
         Log.Information("Applying database migrations...");
-        db.Database.EnsureDeleted(); // Drop old tables
-        db.Database.Migrate(); // Apply migrations with correct schema
+        db.Database.Migrate();
         Log.Information("Database migrations applied successfully");
     }
 

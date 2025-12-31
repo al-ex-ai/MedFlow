@@ -8,19 +8,22 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    // Initialize from localStorage synchronously to avoid flash
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in (from localStorage)
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    // Mark loading as complete after initial render
+    setIsLoading(false);
   }, []);
 
   const login = async (email: string) => {
@@ -68,6 +71,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         logout,
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin',
+        isLoading,
       }}
     >
       {children}

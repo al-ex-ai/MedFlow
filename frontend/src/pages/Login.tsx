@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Container,
   Box,
   Paper,
   TextField,
@@ -65,8 +64,7 @@ const Login: React.FC = () => {
         {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
       </IconButton>
 
-      <Container maxWidth="sm">
-        <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
+        <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
             <LocalHospital sx={{ fontSize: 40, color: 'primary.main', mr: 1 }} />
             <Typography component="h1" variant="h4">
@@ -120,7 +118,6 @@ const Login: React.FC = () => {
             </Box>
           </Box>
         </Paper>
-      </Container>
     </Box>
   );
 };

@@ -124,7 +124,7 @@ const PatientDashboard: React.FC = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ width: '100%' }}>
       {/* Header Section */}
       <Box sx={{ mb: 4 }}>
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
@@ -144,7 +144,7 @@ const PatientDashboard: React.FC = () => {
 
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
             <CardContent>
               <Stack spacing={2}>
@@ -169,7 +169,7 @@ const PatientDashboard: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
             <CardContent>
               <Stack spacing={2}>
@@ -194,7 +194,7 @@ const PatientDashboard: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
             <CardContent>
               <Stack spacing={2}>
@@ -219,7 +219,7 @@ const PatientDashboard: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
             <CardContent>
               <Stack spacing={2}>
@@ -248,7 +248,7 @@ const PatientDashboard: React.FC = () => {
       {/* Main Content */}
       <Grid container spacing={3}>
         {/* Upcoming Appointments */}
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography variant="h6" fontWeight={600}>
@@ -315,7 +315,7 @@ const PatientDashboard: React.FC = () => {
         </Grid>
 
         {/* Recent Invoices */}
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography variant="h6" fontWeight={600}>

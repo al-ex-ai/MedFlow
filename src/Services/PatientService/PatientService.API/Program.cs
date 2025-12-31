@@ -92,10 +92,9 @@ try
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<PatientDbContext>();
-        Log.Information("Recreating database...");
-        db.Database.EnsureDeleted();
-        db.Database.EnsureCreated();
-        Log.Information("Database recreated successfully");
+        Log.Information("Applying database migrations...");
+        db.Database.Migrate();
+        Log.Information("Database migrations applied successfully");
     }
 
     // Configure the HTTP request pipeline
