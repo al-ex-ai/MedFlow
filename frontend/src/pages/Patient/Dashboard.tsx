@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   Grid,
   Paper,
@@ -19,21 +19,57 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Badge,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import {
   CalendarToday,
   Receipt,
   Notifications as NotificationsIcon,
-  Person,
   TrendingUp,
   ArrowForward,
+  AccessTime,
 } from '@mui/icons-material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
+import dayjs, { Dayjs } from 'dayjs';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentService } from '../../services/appointmentService';
 import { billingService } from '../../services/billingService';
 import { notificationService } from '../../services/notificationService';
 import { Appointment, Invoice, Notification, InvoiceStatus } from '../../types';
 import { format } from 'date-fns';
+
+// Custom day component to highlight days with appointments
+function AppointmentDay(
+  props: PickersDayProps<Dayjs> & { appointmentDates?: string[] }
+) {
+  const { appointmentDates = [], day, outsideCurrentMonth, ...other } = props;
+  const dateStr = day.format('YYYY-MM-DD');
+  const hasAppointment = appointmentDates.includes(dateStr);
+
+  return (
+    <Badge
+      key={day.toString()}
+      overlap="circular"
+      badgeContent={hasAppointment ? '•' : undefined}
+      sx={{
+        '& .MuiBadge-badge': {
+          fontSize: '1.2rem',
+          color: 'primary.main',
+          top: 4,
+          right: 4,
+        },
+      }}
+    >
+      <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
+    </Badge>
+  );
+}
 
 const PatientDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -42,6 +78,7 @@ const PatientDashboard: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
 
   useEffect(() => {
     loadDashboardData();
@@ -106,6 +143,20 @@ const PatientDashboard: React.FC = () => {
 
   const pendingInvoices = invoices.filter(inv => inv.status === InvoiceStatus.Pending);
   const totalPending = pendingInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+
+  // Get all appointment dates for calendar highlighting
+  const appointmentDates = useMemo(() => {
+    return appointments.map(apt => dayjs(apt.appointmentDate).format('YYYY-MM-DD'));
+  }, [appointments]);
+
+  // Get appointments for selected date
+  const selectedDateAppointments = useMemo(() => {
+    if (!selectedDate) return [];
+    const selectedStr = selectedDate.format('YYYY-MM-DD');
+    return appointments.filter(apt =>
+      dayjs(apt.appointmentDate).format('YYYY-MM-DD') === selectedStr
+    );
+  }, [appointments, selectedDate]);
 
   if (loading) {
     return (
@@ -247,8 +298,74 @@ const PatientDashboard: React.FC = () => {
 
       {/* Main Content */}
       <Grid container spacing={3}>
-        {/* Upcoming Appointments */}
-        <Grid size={{ xs: 12, md: 6 }}>
+        {/* Calendar Section */}
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
+            <Typography variant="h6" fontWeight={600} mb={2}>
+              Appointment Calendar
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateCalendar
+                value={selectedDate}
+                onChange={(newValue) => setSelectedDate(newValue)}
+                slots={{
+                  day: AppointmentDay,
+                }}
+                slotProps={{
+                  day: {
+                    appointmentDates,
+                  } as any,
+                }}
+                sx={{ width: '100%' }}
+              />
+            </LocalizationProvider>
+
+            {/* Selected Date Appointments */}
+            {selectedDate && (
+              <Box mt={2}>
+                <Typography variant="subtitle2" color="text.secondary" mb={1}>
+                  {selectedDate.format('MMMM D, YYYY')}
+                </Typography>
+                {selectedDateAppointments.length === 0 ? (
+                  <Typography variant="body2" color="text.disabled">
+                    No appointments on this day
+                  </Typography>
+                ) : (
+                  <List dense disablePadding>
+                    {selectedDateAppointments.map((apt) => (
+                      <ListItem
+                        key={apt._id}
+                        sx={{
+                          bgcolor: 'action.hover',
+                          borderRadius: 1,
+                          mb: 1,
+                          px: 1.5,
+                        }}
+                      >
+                        <AccessTime sx={{ fontSize: 16, mr: 1, color: 'primary.main' }} />
+                        <ListItemText
+                          primary={`Dr. ${apt.doctorName}`}
+                          secondary={`${format(new Date(apt.appointmentDate), 'h:mm a')} - ${apt.reason}`}
+                          primaryTypographyProps={{ variant: 'body2', fontWeight: 500 }}
+                          secondaryTypographyProps={{ variant: 'caption' }}
+                        />
+                        <Chip
+                          label={apt.status}
+                          color={getStatusColor(apt.status)}
+                          size="small"
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </Box>
+            )}
+          </Paper>
+        </Grid>
+
+        {/* Upcoming Appointments Table */}
+        <Grid size={{ xs: 12, md: 8 }}>
           <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography variant="h6" fontWeight={600}>
@@ -315,8 +432,8 @@ const PatientDashboard: React.FC = () => {
         </Grid>
 
         {/* Recent Invoices */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
+        <Grid size={{ xs: 12 }}>
+          <Paper elevation={2} sx={{ p: 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography variant="h6" fontWeight={600}>
                 Recent Invoices
@@ -335,30 +452,32 @@ const PatientDashboard: React.FC = () => {
                 </Typography>
               </Box>
             ) : (
-              <Stack spacing={2}>
+              <Grid container spacing={2}>
                 {invoices.map((invoice) => (
-                  <Card key={invoice.id} variant="outlined">
-                    <CardContent>
-                      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
-                        <Typography variant="h6" color="primary.main" fontWeight={600}>
-                          ${invoice.amount.toFixed(2)}
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={invoice.id}>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
+                          <Typography variant="h6" color="primary.main" fontWeight={600}>
+                            ${invoice.amount.toFixed(2)}
+                          </Typography>
+                          <Chip
+                            label={getInvoiceStatusLabel(invoice.status)}
+                            color={getInvoiceStatusColor(invoice.status)}
+                            size="small"
+                          />
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                          {invoice.description}
                         </Typography>
-                        <Chip
-                          label={getInvoiceStatusLabel(invoice.status)}
-                          color={getInvoiceStatusColor(invoice.status)}
-                          size="small"
-                        />
-                      </Box>
-                      <Typography variant="body2" color="text.secondary" gutterBottom>
-                        {invoice.description}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Due: {format(new Date(invoice.dueDate), 'MMM dd, yyyy')}
-                      </Typography>
-                    </CardContent>
-                  </Card>
+                        <Typography variant="caption" color="text.secondary">
+                          Due: {format(new Date(invoice.dueDate), 'MMM dd, yyyy')}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
                 ))}
-              </Stack>
+              </Grid>
             )}
           </Paper>
         </Grid>
