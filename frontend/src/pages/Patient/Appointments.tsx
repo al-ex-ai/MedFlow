@@ -73,7 +73,7 @@ const Appointments: React.FC = () => {
         doctorName: newAppointment.doctorName,
         appointmentDate: newAppointment.appointmentDate,
         duration: 30,
-        status: 'Scheduled',
+        status: 'scheduled',
         reason: newAppointment.reason,
         notes: newAppointment.notes,
       });
