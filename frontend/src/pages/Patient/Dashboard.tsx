@@ -298,13 +298,19 @@ const PatientDashboard: React.FC = () => {
 
       {/* Main Content */}
       <Grid container spacing={3}>
-        {/* Calendar Section */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={2} sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6" fontWeight={600} mb={2}>
-              Appointment Calendar
-            </Typography>
+        {/* Calendar & Appointments Section */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Typography variant="h6" fontWeight={600}>
+                Appointment Calendar
+              </Typography>
+              <Button endIcon={<ArrowForward />} size="small">
+                View All
+              </Button>
+            </Box>
             <Divider sx={{ mb: 2 }} />
+
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateCalendar
                 value={selectedDate}
@@ -321,9 +327,9 @@ const PatientDashboard: React.FC = () => {
               />
             </LocalizationProvider>
 
-            {/* Selected Date Appointments */}
+            {/* Selected Date Info */}
             {selectedDate && (
-              <Box mt={2}>
+              <Box mt={2} mb={3}>
                 <Typography variant="subtitle2" color="text.secondary" mb={1}>
                   {selectedDate.format('MMMM D, YYYY')}
                 </Typography>
@@ -361,21 +367,12 @@ const PatientDashboard: React.FC = () => {
                 )}
               </Box>
             )}
-          </Paper>
-        </Grid>
 
-        {/* Upcoming Appointments Table */}
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-              <Typography variant="h6" fontWeight={600}>
-                Upcoming Appointments
-              </Typography>
-              <Button endIcon={<ArrowForward />} size="small">
-                View All
-              </Button>
-            </Box>
+            {/* Appointments Table */}
             <Divider sx={{ mb: 2 }} />
+            <Typography variant="subtitle1" fontWeight={600} mb={2}>
+              All Appointments
+            </Typography>
 
             {appointments.length === 0 ? (
               <Box textAlign="center" py={4}>
@@ -386,12 +383,11 @@ const PatientDashboard: React.FC = () => {
               </Box>
             ) : (
               <TableContainer>
-                <Table>
+                <Table size="small">
                   <TableHead>
                     <TableRow>
                       <TableCell><strong>Doctor</strong></TableCell>
                       <TableCell><strong>Date & Time</strong></TableCell>
-                      <TableCell><strong>Reason</strong></TableCell>
                       <TableCell><strong>Status</strong></TableCell>
                     </TableRow>
                   </TableHead>
@@ -400,7 +396,7 @@ const PatientDashboard: React.FC = () => {
                       <TableRow key={apt._id} hover>
                         <TableCell>
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light' }}>
+                            <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.light', fontSize: '0.75rem' }}>
                               {apt.doctorName.split(' ').map(n => n[0]).join('')}
                             </Avatar>
                             <Typography variant="body2">Dr. {apt.doctorName}</Typography>
@@ -408,13 +404,12 @@ const PatientDashboard: React.FC = () => {
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2">
-                            {format(new Date(apt.appointmentDate), 'MMM dd, yyyy')}
+                            {format(new Date(apt.appointmentDate), 'MMM dd')}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {format(new Date(apt.appointmentDate), 'h:mm a')}
                           </Typography>
                         </TableCell>
-                        <TableCell>{apt.reason}</TableCell>
                         <TableCell>
                           <Chip
                             label={apt.status}
@@ -432,8 +427,8 @@ const PatientDashboard: React.FC = () => {
         </Grid>
 
         {/* Recent Invoices */}
-        <Grid size={{ xs: 12 }}>
-          <Paper elevation={2} sx={{ p: 3 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography variant="h6" fontWeight={600}>
                 Recent Invoices
@@ -452,32 +447,30 @@ const PatientDashboard: React.FC = () => {
                 </Typography>
               </Box>
             ) : (
-              <Grid container spacing={2}>
+              <Stack spacing={2}>
                 {invoices.map((invoice) => (
-                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={invoice.id}>
-                    <Card variant="outlined">
-                      <CardContent>
-                        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
-                          <Typography variant="h6" color="primary.main" fontWeight={600}>
-                            ${invoice.amount.toFixed(2)}
-                          </Typography>
-                          <Chip
-                            label={getInvoiceStatusLabel(invoice.status)}
-                            color={getInvoiceStatusColor(invoice.status)}
-                            size="small"
-                          />
-                        </Box>
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                          {invoice.description}
+                  <Card key={invoice.id} variant="outlined">
+                    <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
+                      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
+                        <Typography variant="h6" color="primary.main" fontWeight={600}>
+                          ${invoice.amount.toFixed(2)}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Due: {format(new Date(invoice.dueDate), 'MMM dd, yyyy')}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
+                        <Chip
+                          label={getInvoiceStatusLabel(invoice.status)}
+                          color={getInvoiceStatusColor(invoice.status)}
+                          size="small"
+                        />
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        {invoice.description}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Due: {format(new Date(invoice.dueDate), 'MMM dd, yyyy')}
+                      </Typography>
+                    </CardContent>
+                  </Card>
                 ))}
-              </Grid>
+              </Stack>
             )}
           </Paper>
         </Grid>
