@@ -1,0 +1,157 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    // ========== LOCAL DEBUGGING ==========
+    {
+      "name": "Local: Patient Service",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/Services/PatientService/PatientService.API/bin/Debug/net10.0/PatientService.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Services/PatientService/PatientService.API",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5025"
+      }
+    },
+    {
+      "name": "Local: Billing Service",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/Services/BillingService/BillingService.API/bin/Debug/net10.0/BillingService.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Services/BillingService/BillingService.API",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5056"
+      }
+    },
+    {
+      "name": "Local: Notification Service",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/Services/NotificationService/NotificationService.API/bin/Debug/net10.0/NotificationService.API.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/Services/NotificationService/NotificationService.API",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5060"
+      }
+    },
+    {
+      "name": "Local: API Gateway",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/ApiGateway/bin/Debug/net10.0/ApiGateway.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/ApiGateway",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5000"
+      }
+    },
+    {
+      "name": "Local: Appointment Service (Node)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/Services/AppointmentService/src/index.js",
+      "cwd": "${workspaceFolder}/src/Services/AppointmentService",
+      "console": "integratedTerminal",
+      "env": {
+        "NODE_ENV": "development",
+        "PORT": "5026"
+      }
+    },
+
+    // ========== DOCKER DEBUGGING (Attach) ==========
+    {
+      "name": "Docker: Attach Patient Service",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickRemoteProcess}",
+      "pipeTransport": {
+        "pipeProgram": "docker",
+        "pipeArgs": ["exec", "-i", "micro-patient-service-1"],
+        "debuggerPath": "/vsdbg/vsdbg",
+        "pipeCwd": "${workspaceFolder}"
+      },
+      "sourceFileMap": {
+        "/src": "${workspaceFolder}/src/Services/PatientService/PatientService.API"
+      }
+    },
+    {
+      "name": "Docker: Attach Billing Service",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickRemoteProcess}",
+      "pipeTransport": {
+        "pipeProgram": "docker",
+        "pipeArgs": ["exec", "-i", "micro-billing-service-1"],
+        "debuggerPath": "/vsdbg/vsdbg",
+        "pipeCwd": "${workspaceFolder}"
+      },
+      "sourceFileMap": {
+        "/src": "${workspaceFolder}/src/Services/BillingService/BillingService.API"
+      }
+    },
+    {
+      "name": "Docker: Attach Notification Service",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickRemoteProcess}",
+      "pipeTransport": {
+        "pipeProgram": "docker",
+        "pipeArgs": ["exec", "-i", "micro-notification-service-1"],
+        "debuggerPath": "/vsdbg/vsdbg",
+        "pipeCwd": "${workspaceFolder}"
+      },
+      "sourceFileMap": {
+        "/src": "${workspaceFolder}/src/Services/NotificationService/NotificationService.API"
+      }
+    },
+    {
+      "name": "Docker: Attach API Gateway",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickRemoteProcess}",
+      "pipeTransport": {
+        "pipeProgram": "docker",
+        "pipeArgs": ["exec", "-i", "micro-api-gateway-1"],
+        "debuggerPath": "/vsdbg/vsdbg",
+        "pipeCwd": "${workspaceFolder}"
+      },
+      "sourceFileMap": {
+        "/src": "${workspaceFolder}/src/ApiGateway"
+      }
+    },
+    {
+      "name": "Docker: Attach Appointment Service (Node)",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/src/Services/AppointmentService",
+      "remoteRoot": "/app",
+      "sourceMaps": true
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Local: All .NET Services",
+      "configurations": [
+        "Local: Patient Service",
+        "Local: Billing Service",
+        "Local: Notification Service",
+        "Local: API Gateway"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+# Debug configuration - mount source code for live reload
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.debug.yml up -d
+
+services:
+  # .NET services with remote debugging enabled
+  patient-service:
+    build:
+      context: ./src/Services/PatientService/PatientService.API
+      dockerfile: Dockerfile.debug
+    ports:
+      - "5125:80"
+      - "5225:4024"  # Debug port
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ./src/Services/PatientService/PatientService.API:/src:ro
+    networks:
+      - micro-network
+
+  billing-service:
+    build:
+      context: ./src/Services/BillingService/BillingService.API
+      dockerfile: Dockerfile.debug
+    ports:
+      - "5156:80"
+      - "5256:4024"  # Debug port
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - micro-network
+
+  notification-service:
+    build:
+      context: ./src/Services/NotificationService/NotificationService.API
+      dockerfile: Dockerfile.debug
+    ports:
+      - "5160:80"
+      - "5260:4024"  # Debug port
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - micro-network
+
+  api-gateway:
+    build:
+      context: ./src/ApiGateway
+      dockerfile: Dockerfile.debug
+    ports:
+      - "5100:80"
+      - "5200:4024"  # Debug port
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    networks:
+      - micro-network
+
+  # Node.js with inspect mode
+  appointment-service:
+    build:
+      context: ./src/Services/AppointmentService
+      dockerfile: Dockerfile
+    command: ["node", "--inspect=0.0.0.0:9229", "src/index.js"]
+    ports:
+      - "5126:80"
+      - "9229:9229"  # Debug port
+    environment:
+      - NODE_ENV=development
+    networks:
+      - micro-network
+
+networks:
+  micro-network:
+    external: true
+    name: micro_healthcare-network

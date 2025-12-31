@@ -1,0 +1,173 @@
+services:
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./src/ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - "5100:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ConnectionStrings__SqlServer=Server=sqlserver;Database=master;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=true
+      - ConnectionStrings__MongoDB=mongodb://admin:admin123@mongodb:27017
+      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__RabbitMQ=amqp://admin:admin123@rabbitmq:5672
+      - ReverseProxy__Clusters__patient-cluster__Destinations__destination1__Address=http://patient-service
+      - ReverseProxy__Clusters__appointment-cluster__Destinations__destination1__Address=http://appointment-service
+      - ReverseProxy__Clusters__billing-cluster__Destinations__destination1__Address=http://billing-service
+      - ReverseProxy__Clusters__notification-cluster__Destinations__destination1__Address=http://notification-service
+      - Seq__ServerUrl=http://seq:5341
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    depends_on:
+      - sqlserver
+      - mongodb
+      - redis
+      - rabbitmq
+      - patient-service
+      - appointment-service
+      - billing-service
+      - notification-service
+    networks:
+      - micro-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Patient Service (.NET)
+  patient-service:
+    build:
+      context: ./src/Services/PatientService/PatientService.API
+      dockerfile: Dockerfile
+    ports:
+      - "5125:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=PatientDb;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=true
+      - Redis__ConnectionString=redis:6379
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=admin
+      - RabbitMQ__Password=admin123
+      - Seq__ServerUrl=http://seq:5341
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    depends_on:
+      - sqlserver
+      - redis
+      - rabbitmq
+    networks:
+      - micro-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Appointment Service (Node.js)
+  appointment-service:
+    build:
+      context: ./src/Services/AppointmentService
+      dockerfile: Dockerfile
+    ports:
+      - "5126:80"
+    environment:
+      - NODE_ENV=production
+      - PORT=80
+      - MONGODB_URI=mongodb://admin:admin123@mongodb:27017/appointments?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    depends_on:
+      - mongodb
+      - redis
+      - rabbitmq
+    networks:
+      - micro-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Billing Service (.NET)
+  billing-service:
+    build:
+      context: ./src/Services/BillingService/BillingService.API
+      dockerfile: Dockerfile
+    ports:
+      - "5156:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=BillingDb;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=true
+      - Redis__ConnectionString=redis:6379
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=admin
+      - RabbitMQ__Password=admin123
+      - Seq__ServerUrl=http://seq:5341
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    depends_on:
+      - sqlserver
+      - redis
+      - rabbitmq
+    networks:
+      - micro-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Notification Service (.NET)
+  notification-service:
+    build:
+      context: ./src/Services/NotificationService/NotificationService.API
+      dockerfile: Dockerfile
+    ports:
+      - "5160:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDB__ConnectionString=mongodb://admin:admin123@mongodb:27017
+      - MongoDB__DatabaseName=notifications
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=admin
+      - RabbitMQ__Password=admin123
+      - Seq__ServerUrl=http://seq:5341
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      - micro-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5180:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - micro-network
+
+  # Override Prometheus to use Docker config
+  prometheus:
+    volumes:
+      - ./infrastructure/prometheus/prometheus.docker.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+
+networks:
+  micro-network:
+    external: true
+    name: micro_healthcare-network

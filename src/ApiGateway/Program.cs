@@ -7,6 +7,7 @@ using Prometheus;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure OpenTelemetry Tracing
+var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? "http://localhost:4317";
 builder.Services.AddOpenTelemetry()
     .ConfigureResource(resource => resource
         .AddService(
@@ -17,7 +18,7 @@ builder.Services.AddOpenTelemetry()
         .AddHttpClientInstrumentation()
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://localhost:4317");
+            options.Endpoint = new Uri(otlpEndpoint);
         }));
 
 // Add YARP Reverse Proxy
@@ -44,6 +45,12 @@ var redisConnection = builder.Configuration.GetConnectionString("Redis")
     ?? "localhost:6379";
 var rabbitConnection = builder.Configuration.GetConnectionString("RabbitMQ")
     ?? "amqp://admin:admin123@localhost:5672";
+
+// Get service URLs from configuration (Docker uses service names, local uses localhost:port)
+var patientServiceUrl = builder.Configuration["ServiceUrls:PatientService"] ?? "http://localhost:5025";
+var appointmentServiceUrl = builder.Configuration["ServiceUrls:AppointmentService"] ?? "http://localhost:5026";
+var billingServiceUrl = builder.Configuration["ServiceUrls:BillingService"] ?? "http://localhost:5056";
+var notificationServiceUrl = builder.Configuration["ServiceUrls:NotificationService"] ?? "http://localhost:5060";
 
 // Add health checks for infrastructure
 builder.Services.AddHealthChecks()
@@ -72,31 +79,32 @@ builder.Services.AddHealthChecks()
         tags: ["messaging", "infrastructure"])
     // Microservices health endpoints
     .AddUrlGroup(
-        new Uri("http://localhost:5025/health"),
+        new Uri($"{patientServiceUrl}/health"),
         name: "patient-service",
         tags: ["service"])
     .AddUrlGroup(
-        new Uri("http://localhost:5026/health"),
+        new Uri($"{appointmentServiceUrl}/health"),
         name: "appointment-service",
         tags: ["service"])
     .AddUrlGroup(
-        new Uri("http://localhost:5056/health"),
+        new Uri($"{billingServiceUrl}/health"),
         name: "billing-service",
         tags: ["service"])
     .AddUrlGroup(
-        new Uri("http://localhost:5060/health"),
+        new Uri($"{notificationServiceUrl}/health"),
         name: "notification-service",
         tags: ["service"]);
 
 // Add Health Checks UI
+var healthCheckUrl = builder.Configuration["HealthCheckUI:Url"] ?? "http://localhost:5000/health";
 builder.Services.AddHealthChecksUI(options =>
 {
     options.SetEvaluationTimeInSeconds(30); // Check every 30 seconds
     options.MaximumHistoryEntriesPerEndpoint(50); // Keep 50 entries per endpoint
     options.SetApiMaxActiveRequests(1); // Limit concurrent requests
 
-    // Add health check endpoint
-    options.AddHealthCheckEndpoint("Healthcare Microservices", "/health");
+    // Add health check endpoint with full URL
+    options.AddHealthCheckEndpoint("Healthcare Microservices", healthCheckUrl);
 })
 .AddInMemoryStorage();
 

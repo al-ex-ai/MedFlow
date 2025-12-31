@@ -1,0 +1,30 @@
+# Debug Dockerfile - includes vsdbg for remote debugging
+FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
+WORKDIR /src
+
+COPY *.csproj .
+RUN dotnet restore
+
+COPY . .
+# Build in Debug mode to include symbols
+RUN dotnet publish -c Debug -o /app
+
+# Runtime with debugging tools
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview
+WORKDIR /app
+COPY --from=build /app .
+
+# Install debugging tools
+RUN apt-get update && apt-get install -y \
+    curl \
+    unzip \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install vsdbg (Visual Studio Debugger)
+RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
+
+ENV ASPNETCORE_URLS=http://+:80
+EXPOSE 80 4024
+
+ENTRYPOINT ["dotnet", "BillingService.API.dll"]
