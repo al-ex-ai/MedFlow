@@ -11,6 +11,8 @@ using Prometheus;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -31,6 +33,22 @@ try
 
     // Use Serilog
     builder.Host.UseSerilog();
+
+    // Configure OpenTelemetry Tracing
+    builder.Services.AddOpenTelemetry()
+        .ConfigureResource(resource => resource
+            .AddService(
+                serviceName: "BillingService",
+                serviceVersion: "1.0.0"))
+        .WithTracing(tracing => tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddSqlClientInstrumentation()
+            .AddRedisInstrumentation()
+            .AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri("http://localhost:4317");
+            }));
 
     // Add services to the container
     builder.Services.AddControllers();

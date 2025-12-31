@@ -9,20 +9,25 @@ scrape_configs:
 
   - job_name: 'patient-service'
     static_configs:
-      - targets: ['patient-service-1:8080', 'patient-service-2:8080']
+      - targets: ['host.docker.internal:5025']
     metrics_path: '/metrics'
 
   - job_name: 'appointment-service'
     static_configs:
-      - targets: ['appointment-service-1:3000', 'appointment-service-2:3000']
+      - targets: ['host.docker.internal:5026']
     metrics_path: '/metrics'
 
   - job_name: 'billing-service'
     static_configs:
-      - targets: ['billing-service-1:8080']
+      - targets: ['host.docker.internal:5056']
     metrics_path: '/metrics'
 
   - job_name: 'notification-service'
     static_configs:
-      - targets: ['notification-service-1:8080']
+      - targets: ['host.docker.internal:5060']
+    metrics_path: '/metrics'
+
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['host.docker.internal:5000']
     metrics_path: '/metrics'

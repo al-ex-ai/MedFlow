@@ -1,7 +1,24 @@
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure OpenTelemetry Tracing
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(
+            serviceName: "ApiGateway",
+            serviceVersion: "1.0.0"))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri("http://localhost:4317");
+        }));
 
 // Add YARP Reverse Proxy
 builder.Services.AddReverseProxy()
@@ -88,6 +105,10 @@ var app = builder.Build();
 // Use CORS
 app.UseCors("AllowAll");
 
+// Prometheus metrics
+app.UseRouting();
+app.UseHttpMetrics();
+
 // Map health endpoint with detailed response
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
@@ -101,6 +122,9 @@ app.MapHealthChecksUI(options =>
     options.UIPath = "/healthchecks-ui";
     options.ApiPath = "/healthchecks-api";
 });
+
+// Prometheus metrics endpoint
+app.MapMetrics();
 
 // Map YARP reverse proxy
 app.MapReverseProxy();
