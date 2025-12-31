@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://healthcare.micro/schemas/AppointmentCreated.schema.json",
+  "title": "AppointmentCreated",
+  "description": "Event published when a new appointment is created",
+  "type": "object",
+  "required": ["appointmentId", "patientId", "patientName", "patientEmail", "doctorName", "appointmentDate", "status", "createdAt"],
+  "properties": {
+    "appointmentId": {
+      "type": "string",
+      "description": "Unique identifier for the appointment (MongoDB ObjectId)"
+    },
+    "patientId": {
+      "type": "string",
+      "description": "Unique identifier for the patient"
+    },
+    "patientName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Full name of the patient"
+    },
+    "patientEmail": {
+      "type": "string",
+      "format": "email",
+      "description": "Patient's email address"
+    },
+    "doctorName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Name of the doctor"
+    },
+    "appointmentDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time of the appointment"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["scheduled", "confirmed", "cancelled", "completed"],
+      "description": "Current status of the appointment"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the appointment was created"
+    }
+  }
+}

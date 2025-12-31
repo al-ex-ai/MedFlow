@@ -28,9 +28,20 @@ public class AppointmentCreatedConsumer : IConsumer<AppointmentCreatedEventWrapp
 
         _logger.LogInformation("Received AppointmentCreated event for appointment: {AppointmentId}", appointmentEvent.AppointmentId);
 
-        // Parse PatientId as Guid (from Patient Service)
+        // Parse PatientId - try as Guid first (from Patient Service), otherwise generate new Guid
         // AppointmentId is MongoDB ObjectId string - we'll store it as string reference
-        var patientId = Guid.Parse(appointmentEvent.PatientId);
+        Guid patientId;
+        if (!Guid.TryParse(appointmentEvent.PatientId, out patientId))
+        {
+            // If PatientId is not a valid Guid (e.g., MongoDB ObjectId), generate a new one
+            patientId = Guid.NewGuid();
+            _logger.LogWarning("PatientId {PatientId} is not a valid Guid, generated new PatientId: {NewPatientId}",
+                appointmentEvent.PatientId, patientId);
+        }
+
+        // Log received event data
+        _logger.LogInformation("Creating invoice - PatientName: {PatientName}, PatientEmail: {PatientEmail}",
+            appointmentEvent.PatientName, appointmentEvent.PatientEmail);
 
         // Auto-generate invoice for the appointment
         var invoice = new Invoice
@@ -52,10 +63,10 @@ public class AppointmentCreatedConsumer : IConsumer<AppointmentCreatedEventWrapp
         _context.Invoices.Add(invoice);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Invoice created with ID: {InvoiceId} for appointment: {AppointmentId} (MongoDB: {MongoAppointmentId})",
-            invoice.Id, invoice.AppointmentId, appointmentEvent.AppointmentId);
+        _logger.LogInformation("Invoice created with ID: {InvoiceId}, PatientEmail saved: {PatientEmail}, for appointment: {AppointmentId} (MongoDB: {MongoAppointmentId})",
+            invoice.Id, invoice.PatientEmail, invoice.AppointmentId, appointmentEvent.AppointmentId);
 
-        // Publish InvoiceCreated event
+        // Publish InvoiceCreated event to "invoice-events" exchange (schema-based, service-independent)
         var invoiceCreatedEvent = new InvoiceCreatedEvent(
             invoice.Id,
             invoice.AppointmentId,
@@ -66,7 +77,8 @@ public class AppointmentCreatedConsumer : IConsumer<AppointmentCreatedEventWrapp
             invoice.CreatedAt
         );
 
+        // Publish - will use "invoice-events" exchange as configured in message topology
         await _publishEndpoint.Publish(invoiceCreatedEvent);
-        _logger.LogInformation("Published InvoiceCreatedEvent for invoice: {InvoiceId}", invoice.Id);
+        _logger.LogInformation("Published InvoiceCreatedEvent to 'invoice-events' exchange for invoice: {InvoiceId}", invoice.Id);
     }
 }

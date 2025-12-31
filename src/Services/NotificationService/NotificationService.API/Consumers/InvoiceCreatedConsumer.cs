@@ -21,36 +21,45 @@ public class InvoiceCreatedConsumer : IConsumer<InvoiceCreatedEvent>
 
     public async Task Consume(ConsumeContext<InvoiceCreatedEvent> context)
     {
-        var invoiceEvent = context.Message;
-
-        _logger.LogInformation("Received InvoiceCreated event for invoice: {InvoiceId}",
-            invoiceEvent.InvoiceId);
-
-        // Create email notification for invoice
-        var notification = new Notification
+        try
         {
-            RecipientEmail = invoiceEvent.PatientEmail,
-            Type = NotificationType.Email,
-            Subject = "New Invoice Available",
-            Message = $"Dear Patient,\n\n" +
-                     $"A new invoice has been generated for your recent appointment.\n\n" +
-                     $"Invoice ID: {invoiceEvent.InvoiceId}\n" +
-                     $"Amount: ${invoiceEvent.Amount:F2}\n" +
-                     $"Issued Date: {invoiceEvent.IssuedDate:MMMM dd, yyyy}\n\n" +
-                     $"Please log in to your patient portal to view and pay your invoice.\n\n" +
-                     $"Best regards,\nBilling Department",
-            RelatedEntityId = invoiceEvent.InvoiceId.ToString(),
-            RelatedEntityType = "Invoice",
-            Status = NotificationStatus.Pending
-        };
+            var invoiceEvent = context.Message;
 
-        await _context.Notifications.InsertOneAsync(notification);
+            _logger.LogInformation("Received InvoiceCreated event for invoice: {InvoiceId}, PatientEmail: {PatientEmail}",
+                invoiceEvent.InvoiceId, invoiceEvent.PatientEmail);
 
-        // Simulate sending email
-        await SimulateSendEmail(notification);
+            // Create email notification for invoice
+            var notification = new Notification
+            {
+                RecipientEmail = invoiceEvent.PatientEmail,
+                Type = NotificationType.Email,
+                Subject = "New Invoice Available",
+                Message = $"Dear Patient,\n\n" +
+                         $"A new invoice has been generated for your recent appointment.\n\n" +
+                         $"Invoice ID: {invoiceEvent.InvoiceId}\n" +
+                         $"Amount: ${invoiceEvent.Amount:F2}\n" +
+                         $"Issued Date: {invoiceEvent.IssuedDate:MMMM dd, yyyy}\n\n" +
+                         $"Please log in to your patient portal to view and pay your invoice.\n\n" +
+                         $"Best regards,\nBilling Department",
+                RelatedEntityId = invoiceEvent.InvoiceId.ToString(),
+                RelatedEntityType = "Invoice",
+                Status = NotificationStatus.Pending
+            };
 
-        _logger.LogInformation("Notification created with ID: {NotificationId} for invoice: {InvoiceId}",
-            notification.Id, invoiceEvent.InvoiceId);
+            await _context.Notifications.InsertOneAsync(notification);
+
+            // Simulate sending email
+            await SimulateSendEmail(notification);
+
+            _logger.LogInformation("Invoice notification created with ID: {NotificationId} for invoice: {InvoiceId}, sent to: {Email}",
+                notification.Id, invoiceEvent.InvoiceId, invoiceEvent.PatientEmail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing InvoiceCreated event for invoice: {InvoiceId}",
+                context.Message.InvoiceId);
+            throw;
+        }
     }
 
     private async Task SimulateSendEmail(Notification notification)

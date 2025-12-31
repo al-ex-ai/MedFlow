@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BillingService.API.Migrations
 {
     [DbContext(typeof(BillingDbContext))]
-    [Migration("20251230203823_InitialCreate")]
+    [Migration("20251231002646_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -42,10 +42,7 @@ namespace BillingService.API.Migrations
 
                     b.Property<string>("Currency")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)")
-                        .HasDefaultValue("USD");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -82,13 +79,7 @@ namespace BillingService.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppointmentId");
-
-                    b.HasIndex("IssuedDate");
-
                     b.HasIndex("PatientId");
-
-                    b.HasIndex("Status");
 
                     b.ToTable("Invoices");
                 });

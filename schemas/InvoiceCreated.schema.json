@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://healthcare.micro/schemas/InvoiceCreated.schema.json",
+  "title": "InvoiceCreated",
+  "description": "Event published when a new invoice is created",
+  "type": "object",
+  "required": ["invoiceId", "appointmentId", "patientId", "patientEmail", "amount", "issuedDate", "createdAt"],
+  "properties": {
+    "invoiceId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the invoice"
+    },
+    "appointmentId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Associated appointment identifier"
+    },
+    "patientId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Patient identifier"
+    },
+    "patientEmail": {
+      "type": "string",
+      "format": "email",
+      "description": "Patient's email address for notification"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Invoice amount in decimal format"
+    },
+    "issuedDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date when the invoice was issued"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the invoice was created"
+    }
+  }
+}

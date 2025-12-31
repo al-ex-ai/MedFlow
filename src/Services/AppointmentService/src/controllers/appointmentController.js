@@ -77,6 +77,7 @@ export const createAppointment = async (req, res) => {
       appointmentId: appointment._id.toString(),
       patientId: appointment.patientId,
       patientName: appointment.patientName,
+      patientEmail: appointment.patientEmail,
       doctorName: appointment.doctorName,
       appointmentDate: appointment.appointmentDate,
       status: appointment.status,

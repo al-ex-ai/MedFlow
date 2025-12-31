@@ -1,5 +1,8 @@
+using MassTransit;
+
 namespace BillingService.API.Events;
 
+[EntityName("InvoiceCreated")] // Schema-based name, independent of namespace
 public record InvoiceCreatedEvent(
     Guid InvoiceId,
     Guid AppointmentId,

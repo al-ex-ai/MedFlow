@@ -21,7 +21,7 @@ namespace BillingService.API.Migrations
                     PatientName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     PatientEmail = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Currency = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false, defaultValue: "USD"),
+                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     IssuedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -36,24 +36,9 @@ namespace BillingService.API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invoices_AppointmentId",
-                table: "Invoices",
-                column: "AppointmentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Invoices_IssuedDate",
-                table: "Invoices",
-                column: "IssuedDate");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Invoices_PatientId",
                 table: "Invoices",
                 column: "PatientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Invoices_Status",
-                table: "Invoices",
-                column: "Status");
         }
 
         /// <inheritdoc />

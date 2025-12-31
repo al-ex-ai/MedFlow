@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://healthcare.micro/schemas/PatientCreated.schema.json",
+  "title": "PatientCreated",
+  "description": "Event published when a new patient is created",
+  "type": "object",
+  "required": ["patientId", "firstName", "lastName", "email", "dateOfBirth", "createdAt"],
+  "properties": {
+    "patientId": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the patient"
+    },
+    "firstName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Patient's first name"
+    },
+    "lastName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Patient's last name"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Patient's email address"
+    },
+    "phoneNumber": {
+      "type": "string",
+      "description": "Patient's phone number"
+    },
+    "dateOfBirth": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Patient's date of birth"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the patient was created"
+    }
+  }
+}
