@@ -74,12 +74,12 @@ const Notifications: React.FC = () => {
     }
   };
 
-  const getStatusIcon = (status: number) => {
+  const getStatusIcon = (status: number): React.ReactElement | undefined => {
     switch (status) {
       case NotificationStatus.Sent: return <CheckCircle color="success" fontSize="small" />;
       case NotificationStatus.Failed: return <ErrorIcon color="error" fontSize="small" />;
       case NotificationStatus.Pending: return <Schedule color="warning" fontSize="small" />;
-      default: return null;
+      default: return undefined;
     }
   };
 

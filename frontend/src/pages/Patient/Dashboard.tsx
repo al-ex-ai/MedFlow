@@ -46,15 +46,15 @@ import { format } from 'date-fns';
 
 // Custom day component to highlight days with appointments
 function AppointmentDay(
-  props: PickersDayProps<Dayjs> & { appointmentDates?: string[] }
+  props: PickersDayProps & { appointmentDates?: string[] }
 ) {
   const { appointmentDates = [], day, outsideCurrentMonth, ...other } = props;
-  const dateStr = day.format('YYYY-MM-DD');
+  const dateStr = (day as Dayjs).format('YYYY-MM-DD');
   const hasAppointment = appointmentDates.includes(dateStr);
 
   return (
     <Badge
-      key={day.toString()}
+      key={(day as Dayjs).toString()}
       overlap="circular"
       badgeContent={hasAppointment ? '•' : undefined}
       sx={{

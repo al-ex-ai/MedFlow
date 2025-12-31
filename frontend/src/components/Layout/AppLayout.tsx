@@ -25,7 +25,6 @@ import {
   Receipt,
   Notifications,
   LocalHospital,
-  AccountCircle,
   Logout,
   Brightness4,
   Brightness7,
