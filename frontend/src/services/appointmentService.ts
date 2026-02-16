@@ -28,6 +28,11 @@ export const appointmentService = {
     return response.data;
   },
 
+  async cancel(id: string): Promise<Appointment> {
+    const response = await axios.patch(`${API_ENDPOINTS.APPOINTMENTS}/${id}/cancel`);
+    return response.data;
+  },
+
   async delete(id: string): Promise<void> {
     await axios.delete(`${API_ENDPOINTS.APPOINTMENTS}/${id}`);
   },

@@ -25,6 +25,7 @@ import { Add, CalendarToday } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { appointmentService } from '../../services/appointmentService';
 import { Appointment } from '../../types';
+import { API_CONFIG } from '../../config/api';
 import { format } from 'date-fns';
 
 const Appointments: React.FC = () => {
@@ -108,13 +109,15 @@ const Appointments: React.FC = () => {
         <Typography variant="h4" fontWeight={600}>
           My Appointments
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => setOpenDialog(true)}
-        >
-          New Appointment
-        </Button>
+        {!API_CONFIG.DEMO_MODE && (
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => setOpenDialog(true)}
+          >
+            New Appointment
+          </Button>
+        )}
       </Box>
 
       {error && (
@@ -133,9 +136,11 @@ const Appointments: React.FC = () => {
             <Typography variant="body2" color="text.secondary" mb={3}>
               Schedule your first appointment to get started
             </Typography>
-            <Button variant="contained" startIcon={<Add />} onClick={() => setOpenDialog(true)}>
-              Schedule Appointment
-            </Button>
+            {!API_CONFIG.DEMO_MODE && (
+              <Button variant="contained" startIcon={<Add />} onClick={() => setOpenDialog(true)}>
+                Schedule Appointment
+              </Button>
+            )}
           </Box>
         ) : (
           <TableContainer>

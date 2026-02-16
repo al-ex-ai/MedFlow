@@ -110,6 +110,24 @@ builder.Services.AddHealthChecksUI(options =>
 
 var app = builder.Build();
 
+// Demo Mode: block all write operations
+var demoMode = builder.Configuration.GetValue<bool>("DemoMode");
+if (demoMode)
+{
+    app.Use(async (context, next) =>
+    {
+        var method = context.Request.Method;
+        if (method is "POST" or "PUT" or "PATCH" or "DELETE")
+        {
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync("{\"error\":\"Demo mode: write operations are disabled\"}");
+            return;
+        }
+        await next();
+    });
+}
+
 // Use CORS
 app.UseCors("AllowAll");
 

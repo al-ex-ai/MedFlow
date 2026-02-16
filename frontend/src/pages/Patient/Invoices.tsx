@@ -21,6 +21,7 @@ import { Receipt, Payment } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { billingService } from '../../services/billingService';
 import { Invoice, InvoiceStatus } from '../../types';
+import { API_CONFIG } from '../../config/api';
 import { format } from 'date-fns';
 
 const Invoices: React.FC = () => {
@@ -153,7 +154,7 @@ const Invoices: React.FC = () => {
                   <TableCell><strong>Issued Date</strong></TableCell>
                   <TableCell><strong>Due Date</strong></TableCell>
                   <TableCell><strong>Status</strong></TableCell>
-                  <TableCell><strong>Actions</strong></TableCell>
+                  {!API_CONFIG.DEMO_MODE && <TableCell><strong>Actions</strong></TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -183,23 +184,25 @@ const Invoices: React.FC = () => {
                         size="small"
                       />
                     </TableCell>
-                    <TableCell>
-                      {invoice.status === InvoiceStatus.Pending && (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          startIcon={<Payment />}
-                          onClick={() => handlePayInvoice(invoice.id)}
-                        >
-                          Pay Now
-                        </Button>
-                      )}
-                      {invoice.status === InvoiceStatus.Paid && invoice.paidDate && (
-                        <Typography variant="caption" color="text.secondary">
-                          Paid on {format(new Date(invoice.paidDate), 'MMM dd, yyyy')}
-                        </Typography>
-                      )}
-                    </TableCell>
+                    {!API_CONFIG.DEMO_MODE && (
+                      <TableCell>
+                        {invoice.status === InvoiceStatus.Pending && (
+                          <Button
+                            size="small"
+                            variant="contained"
+                            startIcon={<Payment />}
+                            onClick={() => handlePayInvoice(invoice.id)}
+                          >
+                            Pay Now
+                          </Button>
+                        )}
+                        {invoice.status === InvoiceStatus.Paid && invoice.paidDate && (
+                          <Typography variant="caption" color="text.secondary">
+                            Paid on {format(new Date(invoice.paidDate), 'MMM dd, yyyy')}
+                          </Typography>
+                        )}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

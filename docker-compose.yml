@@ -68,6 +68,7 @@ services:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "StrongPassword123!"
       MSSQL_PID: "Developer"
+      MSSQL_MEMORY_LIMIT_MB: 512
     volumes:
       - sqlserver-data:/var/opt/mssql
     networks:
@@ -148,7 +149,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "3001:3000"
+      - "3100:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_USERS_ALLOW_SIGN_UP: "false"

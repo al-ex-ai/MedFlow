@@ -68,7 +68,7 @@ const Login: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
             <LocalHospital sx={{ fontSize: 40, color: 'primary.main', mr: 1 }} />
             <Typography component="h1" variant="h4">
-              Healthcare Portal
+              MedFlow
             </Typography>
           </Box>
 
@@ -111,7 +111,7 @@ const Login: React.FC = () => {
               <Typography variant="caption" color="text.secondary">
                 <strong>Demo Users:</strong>
                 <br />
-                Admin: admin@healthcare.com
+                Admin: admin@medflow.com
                 <br />
                 Patient: john.doe@example.com, jane.smith@example.com
               </Typography>

@@ -9,6 +9,10 @@ import PatientDashboard from './pages/Patient/Dashboard';
 import Appointments from './pages/Patient/Appointments';
 import Invoices from './pages/Patient/Invoices';
 import Notifications from './pages/Patient/Notifications';
+import AdminDashboard from './pages/Admin/Dashboard';
+import AdminPatients from './pages/Admin/Patients';
+import AdminAppointments from './pages/Admin/Appointments';
+import AdminBilling from './pages/Admin/Billing';
 
 function App() {
   return (
@@ -42,10 +46,10 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route index element={<div>Admin Dashboard (Coming Soon)</div>} />
-              <Route path="patients" element={<div>Patients Page (Coming Soon)</div>} />
-              <Route path="appointments" element={<div>Appointments Page (Coming Soon)</div>} />
-              <Route path="billing" element={<div>Billing Page (Coming Soon)</div>} />
+              <Route index element={<AdminDashboard />} />
+              <Route path="patients" element={<AdminPatients />} />
+              <Route path="appointments" element={<AdminAppointments />} />
+              <Route path="billing" element={<AdminBilling />} />
             </Route>
 
             {/* Default Route */}

@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { API_CONFIG } from '../../config/api';
 
 const DRAWER_WIDTH = 240;
 
@@ -85,7 +86,7 @@ const AppLayout: React.FC = () => {
       <Toolbar>
         <LocalHospital sx={{ color: 'primary.main', mr: 1 }} />
         <Typography variant="h6" noWrap component="div">
-          Healthcare
+          MedFlow
         </Typography>
       </Toolbar>
       <Divider />
@@ -121,7 +122,7 @@ const AppLayout: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {isAdmin ? 'Admin Portal' : 'Patient Portal'}
+            {isAdmin ? 'MedFlow Admin' : 'MedFlow Portal'}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <IconButton onClick={toggleTheme} color="inherit" title="Toggle dark mode">
@@ -187,6 +188,21 @@ const AppLayout: React.FC = () => {
         }}
       >
         <Toolbar />
+        {API_CONFIG.DEMO_MODE && (
+          <Box
+            sx={{
+              bgcolor: 'info.main',
+              color: 'info.contrastText',
+              textAlign: 'center',
+              py: 0.75,
+              px: 2,
+              fontSize: '0.85rem',
+              fontWeight: 500,
+            }}
+          >
+            Demo Mode — This is a read-only demo. Data modifications are disabled.
+          </Box>
+        )}
         <Box sx={{ p: 3 }}>
           <Outlet />
         </Box>

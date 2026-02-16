@@ -7,6 +7,7 @@ const defaultGatewayUrl = isDocker ? '/api' : 'http://localhost:5000/api';
 export const API_CONFIG = {
   GATEWAY_URL: import.meta.env.VITE_API_GATEWAY_URL || defaultGatewayUrl,
   ENV: import.meta.env.VITE_ENV || 'development',
+  DEMO_MODE: import.meta.env.VITE_DEMO_MODE === 'true',
 };
 
 // All API calls now go through the API Gateway

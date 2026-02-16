@@ -12,6 +12,8 @@ COPY . .
 # Use Docker env file and set environment variables for Vite build
 ENV VITE_DOCKER=true
 ENV VITE_API_GATEWAY_URL=/api
+ARG VITE_DEMO_MODE=false
+ENV VITE_DEMO_MODE=${VITE_DEMO_MODE}
 RUN npm run build
 
 # Runtime stage - serve with nginx
