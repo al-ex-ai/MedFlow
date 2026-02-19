@@ -19,7 +19,6 @@ import {
   DialogActions,
   TextField,
   Stack,
-  Avatar,
 } from '@mui/material';
 import { Add, CalendarToday } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
@@ -105,8 +104,8 @@ const Appointments: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" fontWeight={600}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={1}>
+        <Typography variant="h4" fontWeight={600} sx={{ fontSize: { xs: '1.25rem', sm: '1.75rem', md: '2.125rem' } }}>
           My Appointments
         </Typography>
         {!API_CONFIG.DEMO_MODE && (
@@ -143,47 +142,42 @@ const Appointments: React.FC = () => {
             )}
           </Box>
         ) : (
-          <TableContainer>
-            <Table>
+          <TableContainer sx={{ overflowX: 'auto' }}>
+            <Table size="small">
               <TableHead>
                 <TableRow>
                   <TableCell><strong>Doctor</strong></TableCell>
-                  <TableCell><strong>Date & Time</strong></TableCell>
-                  <TableCell><strong>Reason</strong></TableCell>
-                  <TableCell><strong>Duration</strong></TableCell>
+                  <TableCell><strong>Date</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}><strong>Reason</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}><strong>Duration</strong></TableCell>
                   <TableCell><strong>Status</strong></TableCell>
-                  <TableCell><strong>Notes</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}><strong>Notes</strong></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {appointments.map((apt) => (
                   <TableRow key={apt._id} hover>
-                    <TableCell>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.light' }}>
-                          {apt.doctorName.split(' ').map(n => n[0]).join('')}
-                        </Avatar>
-                        <Typography variant="body2">Dr. {apt.doctorName}</Typography>
-                      </Stack>
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
+                      <Typography variant="body2" noWrap sx={{ maxWidth: { xs: 100, sm: 'none' } }}>Dr. {apt.doctorName}</Typography>
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {format(new Date(apt.appointmentDate), 'MMM dd, yyyy')}
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
+                      <Typography variant="body2" noWrap>
+                        {format(new Date(apt.appointmentDate), 'MMM dd')}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {format(new Date(apt.appointmentDate), 'h:mm a')}
                       </Typography>
                     </TableCell>
-                    <TableCell>{apt.reason}</TableCell>
-                    <TableCell>{apt.duration} min</TableCell>
-                    <TableCell>
+                    <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>{apt.reason}</TableCell>
+                    <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>{apt.duration} min</TableCell>
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
                       <Chip
                         label={apt.status}
                         color={getStatusColor(apt.status)}
                         size="small"
                       />
                     </TableCell>
-                    <TableCell>{apt.notes || '-'}</TableCell>
+                    <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>{apt.notes || '-'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

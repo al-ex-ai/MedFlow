@@ -101,7 +101,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography variant="h4" fontWeight={600} mb={4}>
+      <Typography variant="h4" fontWeight={600} mb={4} sx={{ fontSize: { xs: '1.25rem', sm: '1.75rem', md: '2.125rem' } }}>
         Admin Dashboard
       </Typography>
 
@@ -116,7 +116,7 @@ const AdminDashboard: React.FC = () => {
                   <Chip label="Total" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
                 </Box>
                 <Box>
-                  <Typography variant="h3" fontWeight={700} color="white">
+                  <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
                     {patients.length}
                   </Typography>
                   <Typography variant="body2" color="rgba(255,255,255,0.9)">
@@ -137,7 +137,7 @@ const AdminDashboard: React.FC = () => {
                   <Chip label="Total" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
                 </Box>
                 <Box>
-                  <Typography variant="h3" fontWeight={700} color="white">
+                  <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
                     {appointments.length}
                   </Typography>
                   <Typography variant="body2" color="rgba(255,255,255,0.9)">
@@ -158,7 +158,7 @@ const AdminDashboard: React.FC = () => {
                   <Chip label={`$${totalRevenue.toFixed(0)}`} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
                 </Box>
                 <Box>
-                  <Typography variant="h3" fontWeight={700} color="white">
+                  <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
                     {invoices.length}
                   </Typography>
                   <Typography variant="body2" color="rgba(255,255,255,0.9)">
@@ -179,7 +179,7 @@ const AdminDashboard: React.FC = () => {
                   <Chip label="Total" size="small" sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white' }} />
                 </Box>
                 <Box>
-                  <Typography variant="h3" fontWeight={700} color="white">
+                  <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
                     {notifications.length}
                   </Typography>
                   <Typography variant="body2" color="rgba(255,255,255,0.9)">
@@ -218,7 +218,7 @@ const AdminDashboard: React.FC = () => {
                     <TableRow>
                       <TableCell><strong>Name</strong></TableCell>
                       <TableCell><strong>Email</strong></TableCell>
-                      <TableCell><strong>Phone</strong></TableCell>
+                      <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}><strong>Phone</strong></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -226,16 +226,16 @@ const AdminDashboard: React.FC = () => {
                       <TableRow key={patient.id} hover>
                         <TableCell>
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.light', fontSize: '0.75rem' }}>
+                            <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.light', fontSize: '0.75rem', display: { xs: 'none', sm: 'flex' } }}>
                               {patient.firstName[0]}{patient.lastName[0]}
                             </Avatar>
                             <Typography variant="body2">{patient.firstName} {patient.lastName}</Typography>
                           </Stack>
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2" color="text.secondary">{patient.email}</Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: { xs: 120, sm: 'none' }, overflow: 'hidden', textOverflow: 'ellipsis' }}>{patient.email}</Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                           <Typography variant="body2">{patient.phoneNumber}</Typography>
                         </TableCell>
                       </TableRow>
@@ -270,9 +270,9 @@ const AdminDashboard: React.FC = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell><strong>Patient</strong></TableCell>
-                      <TableCell><strong>Doctor</strong></TableCell>
+                      <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}><strong>Doctor</strong></TableCell>
                       <TableCell><strong>Date</strong></TableCell>
-                      <TableCell><strong>Status</strong></TableCell>
+                      <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}><strong>Status</strong></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -281,7 +281,7 @@ const AdminDashboard: React.FC = () => {
                         <TableCell>
                           <Typography variant="body2">{apt.patientName}</Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                           <Stack direction="row" spacing={1} alignItems="center">
                             <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.light', fontSize: '0.75rem' }}>
                               {apt.doctorName.split(' ').map(n => n[0]).join('')}
@@ -297,7 +297,7 @@ const AdminDashboard: React.FC = () => {
                             {format(new Date(apt.appointmentDate), 'h:mm a')}
                           </Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                           <Chip label={apt.status} color={getStatusColor(apt.status)} size="small" />
                         </TableCell>
                       </TableRow>

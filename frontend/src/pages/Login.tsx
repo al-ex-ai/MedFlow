@@ -64,7 +64,7 @@ const Login: React.FC = () => {
         {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
       </IconButton>
 
-        <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400 }}>
+        <Paper elevation={3} sx={{ p: { xs: 3, sm: 4 }, mx: { xs: 2, sm: 0 }, width: '100%', maxWidth: 400 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
             <LocalHospital sx={{ fontSize: 40, color: 'primary.main', mr: 1 }} />
             <Typography component="h1" variant="h4">

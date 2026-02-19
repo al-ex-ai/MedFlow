@@ -13,6 +13,7 @@ import AdminDashboard from './pages/Admin/Dashboard';
 import AdminPatients from './pages/Admin/Patients';
 import AdminAppointments from './pages/Admin/Appointments';
 import AdminBilling from './pages/Admin/Billing';
+import About from './pages/About';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
               <Route path="appointments" element={<Appointments />} />
               <Route path="invoices" element={<Invoices />} />
               <Route path="notifications" element={<Notifications />} />
+              <Route path="about" element={<About />} />
             </Route>
 
             {/* Admin Routes */}
@@ -50,6 +52,7 @@ function App() {
               <Route path="patients" element={<AdminPatients />} />
               <Route path="appointments" element={<AdminAppointments />} />
               <Route path="billing" element={<AdminBilling />} />
+              <Route path="about" element={<About />} />
             </Route>
 
             {/* Default Route */}

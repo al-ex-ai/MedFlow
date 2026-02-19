@@ -28,6 +28,7 @@ import {
   Logout,
   Brightness4,
   Brightness7,
+  Info,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -70,6 +71,7 @@ const AppLayout: React.FC = () => {
     { text: 'Appointments', icon: <Event />, path: '/patient/appointments' },
     { text: 'Invoices', icon: <Receipt />, path: '/patient/invoices' },
     { text: 'Notifications', icon: <Notifications />, path: '/patient/notifications' },
+    { text: 'About', icon: <Info />, path: '/patient/about' },
   ];
 
   const adminNavItems: NavItem[] = [
@@ -77,6 +79,7 @@ const AppLayout: React.FC = () => {
     { text: 'Patients', icon: <People />, path: '/admin/patients' },
     { text: 'Appointments', icon: <Event />, path: '/admin/appointments' },
     { text: 'Billing', icon: <Receipt />, path: '/admin/billing' },
+    { text: 'About', icon: <Info />, path: '/admin/about' },
   ];
 
   const navItems = isAdmin ? adminNavItems : patientNavItems;
@@ -93,7 +96,7 @@ const AppLayout: React.FC = () => {
       <List>
         {navItems.map((item) => (
           <ListItem key={item.text} disablePadding>
-            <ListItemButton onClick={() => navigate(item.path)}>
+            <ListItemButton onClick={() => { navigate(item.path); setMobileOpen(false); }}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItemButton>
@@ -108,8 +111,8 @@ const AppLayout: React.FC = () => {
       <AppBar
         position="fixed"
         sx={{
-          width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
-          ml: { sm: `${DRAWER_WIDTH}px` },
+          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
+          ml: { md: `${DRAWER_WIDTH}px` },
         }}
       >
         <Toolbar>
@@ -117,7 +120,7 @@ const AppLayout: React.FC = () => {
             color="inherit"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -128,7 +131,7 @@ const AppLayout: React.FC = () => {
             <IconButton onClick={toggleTheme} color="inherit" title="Toggle dark mode">
               {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
             </IconButton>
-            <Typography variant="body2">{user?.email}</Typography>
+            <Typography variant="body2" sx={{ display: { xs: 'none', md: 'block' } }}>{user?.email}</Typography>
             <IconButton onClick={handleMenuOpen} color="inherit">
               <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
                 {user?.email.charAt(0).toUpperCase()}
@@ -152,7 +155,7 @@ const AppLayout: React.FC = () => {
 
       <Box
         component="nav"
-        sx={{ width: { sm: DRAWER_WIDTH }, flexShrink: { sm: 0 } }}
+        sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } }}
       >
         <Drawer
           variant="temporary"
@@ -160,7 +163,7 @@ const AppLayout: React.FC = () => {
           onClose={handleDrawerToggle}
           ModalProps={{ keepMounted: true }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
+            display: { xs: 'block', md: 'none' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: DRAWER_WIDTH },
           }}
         >
@@ -169,7 +172,7 @@ const AppLayout: React.FC = () => {
         <Drawer
           variant="permanent"
           sx={{
-            display: { xs: 'none', sm: 'block' },
+            display: { xs: 'none', md: 'block' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: DRAWER_WIDTH },
           }}
           open
@@ -182,7 +185,7 @@ const AppLayout: React.FC = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
+          width: { md: `calc(100% - ${DRAWER_WIDTH}px)` },
           minHeight: '100vh',
           bgcolor: 'background.default',
         }}
@@ -203,7 +206,7 @@ const AppLayout: React.FC = () => {
             Demo Mode — This is a read-only demo. Data modifications are disabled.
           </Box>
         )}
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: { xs: 1.5, sm: 2, md: 3 } }}>
           <Outlet />
         </Box>
       </Box>

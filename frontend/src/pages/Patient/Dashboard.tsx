@@ -180,15 +180,15 @@ const PatientDashboard: React.FC = () => {
     <Box sx={{ width: '100%' }}>
       {/* Header Section */}
       <Box sx={{ mb: 4 }}>
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-          <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main', fontSize: '2rem' }}>
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2, flexWrap: 'wrap' }}>
+          <Avatar sx={{ width: { xs: 48, sm: 64 }, height: { xs: 48, sm: 64 }, bgcolor: 'primary.main', fontSize: { xs: '1.5rem', sm: '2rem' } }}>
             {user?.patientName?.split(' ').map(n => n[0]).join('') || 'P'}
           </Avatar>
-          <Box>
-            <Typography variant="h4" fontWeight={600}>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="h4" fontWeight={600} sx={{ fontSize: { xs: '1.25rem', sm: '1.75rem', md: '2.125rem' } }}>
               Welcome back, {user?.patientName?.split(' ')[0] || user?.email}
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography variant="body2" color="text.secondary">
               Here's your health overview
             </Typography>
           </Box>
@@ -210,7 +210,7 @@ const PatientDashboard: React.FC = () => {
                   />
                 </Box>
                 <Box>
-                  <Typography variant="h3" fontWeight={700} color="white">
+                  <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
                     {appointments.length}
                   </Typography>
                   <Typography variant="body2" color="rgba(255,255,255,0.9)">
@@ -235,7 +235,7 @@ const PatientDashboard: React.FC = () => {
                   />
                 </Box>
                 <Box>
-                  <Typography variant="h3" fontWeight={700} color="white">
+                  <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
                     ${totalPending.toFixed(0)}
                   </Typography>
                   <Typography variant="body2" color="rgba(255,255,255,0.9)">
@@ -260,7 +260,7 @@ const PatientDashboard: React.FC = () => {
                   />
                 </Box>
                 <Box>
-                  <Typography variant="h3" fontWeight={700} color="white">
+                  <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
                     {notifications.length}
                   </Typography>
                   <Typography variant="body2" color="rgba(255,255,255,0.9)">
@@ -285,7 +285,7 @@ const PatientDashboard: React.FC = () => {
                   />
                 </Box>
                 <Box>
-                  <Typography variant="h3" fontWeight={700} color="white">
+                  <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
                     100%
                   </Typography>
                   <Typography variant="body2" color="rgba(255,255,255,0.9)">
@@ -390,7 +390,7 @@ const PatientDashboard: React.FC = () => {
                     <TableRow>
                       <TableCell><strong>Doctor</strong></TableCell>
                       <TableCell><strong>Date & Time</strong></TableCell>
-                      <TableCell><strong>Status</strong></TableCell>
+                      <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}><strong>Status</strong></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -398,7 +398,7 @@ const PatientDashboard: React.FC = () => {
                       <TableRow key={apt._id} hover>
                         <TableCell>
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.light', fontSize: '0.75rem' }}>
+                            <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.light', fontSize: '0.75rem', display: { xs: 'none', sm: 'flex' } }}>
                               {apt.doctorName.split(' ').map(n => n[0]).join('')}
                             </Avatar>
                             <Typography variant="body2">Dr. {apt.doctorName}</Typography>
@@ -412,7 +412,7 @@ const PatientDashboard: React.FC = () => {
                             {format(new Date(apt.appointmentDate), 'h:mm a')}
                           </Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                           <Chip
                             label={apt.status}
                             color={getStatusColor(apt.status)}

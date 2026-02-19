@@ -92,8 +92,8 @@ const AdminPatients: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" fontWeight={600}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={1}>
+        <Typography variant="h4" fontWeight={600} sx={{ fontSize: { xs: '1.25rem', sm: '1.75rem', md: '2.125rem' } }}>
           Patients
         </Typography>
         {!API_CONFIG.DEMO_MODE && (
@@ -132,9 +132,9 @@ const AdminPatients: React.FC = () => {
                 <TableRow>
                   <TableCell><strong>Name</strong></TableCell>
                   <TableCell><strong>Email</strong></TableCell>
-                  <TableCell><strong>Date of Birth</strong></TableCell>
-                  <TableCell><strong>Phone</strong></TableCell>
-                  <TableCell><strong>Address</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}><strong>Date of Birth</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}><strong>Phone</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}><strong>Address</strong></TableCell>
                   {!API_CONFIG.DEMO_MODE && <TableCell><strong>Actions</strong></TableCell>}
                 </TableRow>
               </TableHead>
@@ -143,18 +143,20 @@ const AdminPatients: React.FC = () => {
                   <TableRow key={patient.id} hover>
                     <TableCell>
                       <Stack direction="row" spacing={1} alignItems="center">
-                        <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.light' }}>
+                        <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.light', display: { xs: 'none', sm: 'flex' } }}>
                           {patient.firstName[0]}{patient.lastName[0]}
                         </Avatar>
                         <Typography variant="body2">{patient.firstName} {patient.lastName}</Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell>{patient.email}</TableCell>
                     <TableCell>
+                      <Typography variant="body2" sx={{ maxWidth: { xs: 120, sm: 'none' }, overflow: 'hidden', textOverflow: 'ellipsis' }}>{patient.email}</Typography>
+                    </TableCell>
+                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                       {format(new Date(patient.dateOfBirth), 'MMM dd, yyyy')}
                     </TableCell>
-                    <TableCell>{patient.phoneNumber}</TableCell>
-                    <TableCell>{patient.address}</TableCell>
+                    <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{patient.phoneNumber}</TableCell>
+                    <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>{patient.address}</TableCell>
                     {!API_CONFIG.DEMO_MODE && (
                       <TableCell>
                         <Tooltip title="Delete patient">

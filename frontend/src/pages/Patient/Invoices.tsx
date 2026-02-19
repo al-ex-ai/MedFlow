@@ -93,7 +93,7 @@ const Invoices: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography variant="h4" fontWeight={600} mb={3}>
+      <Typography variant="h4" fontWeight={600} mb={3} sx={{ fontSize: { xs: '1.25rem', sm: '1.75rem', md: '2.125rem' } }}>
         My Invoices
       </Typography>
 
@@ -109,7 +109,7 @@ const Invoices: React.FC = () => {
             <Typography variant="body2" color="white" gutterBottom>
               Outstanding Balance
             </Typography>
-            <Typography variant="h3" fontWeight={700} color="white">
+            <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
               ${totalPending.toFixed(2)}
             </Typography>
             <Typography variant="caption" color="rgba(255,255,255,0.8)">
@@ -122,7 +122,7 @@ const Invoices: React.FC = () => {
             <Typography variant="body2" color="white" gutterBottom>
               Total Paid
             </Typography>
-            <Typography variant="h3" fontWeight={700} color="white">
+            <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
               ${totalPaid.toFixed(2)}
             </Typography>
             <Typography variant="caption" color="rgba(255,255,255,0.8)">
@@ -144,40 +144,30 @@ const Invoices: React.FC = () => {
             </Typography>
           </Box>
         ) : (
-          <TableContainer>
-            <Table>
+          <TableContainer sx={{ overflowX: 'auto' }}>
+            <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell><strong>Invoice ID</strong></TableCell>
-                  <TableCell><strong>Description</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}><strong>Description</strong></TableCell>
                   <TableCell><strong>Amount</strong></TableCell>
-                  <TableCell><strong>Issued Date</strong></TableCell>
-                  <TableCell><strong>Due Date</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}><strong>Due</strong></TableCell>
                   <TableCell><strong>Status</strong></TableCell>
-                  {!API_CONFIG.DEMO_MODE && <TableCell><strong>Actions</strong></TableCell>}
+                  {!API_CONFIG.DEMO_MODE && <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}><strong>Actions</strong></TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {invoices.map((invoice) => (
                   <TableRow key={invoice.id} hover>
-                    <TableCell>
-                      <Typography variant="body2" fontFamily="monospace">
-                        {invoice.id.substring(0, 8)}...
-                      </Typography>
-                    </TableCell>
-                    <TableCell>{invoice.description}</TableCell>
-                    <TableCell>
-                      <Typography variant="body2" fontWeight={600} color="primary.main">
+                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{invoice.description}</TableCell>
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
+                      <Typography variant="body2" fontWeight={600} color="primary.main" noWrap>
                         ${invoice.amount.toFixed(2)}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      {format(new Date(invoice.issuedDate), 'MMM dd, yyyy')}
-                    </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>
                       {format(new Date(invoice.dueDate), 'MMM dd, yyyy')}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
                       <Chip
                         label={getStatusLabel(invoice.status)}
                         color={getStatusColor(invoice.status)}
@@ -185,7 +175,7 @@ const Invoices: React.FC = () => {
                       />
                     </TableCell>
                     {!API_CONFIG.DEMO_MODE && (
-                      <TableCell>
+                      <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                         {invoice.status === InvoiceStatus.Pending && (
                           <Button
                             size="small"
@@ -193,12 +183,12 @@ const Invoices: React.FC = () => {
                             startIcon={<Payment />}
                             onClick={() => handlePayInvoice(invoice.id)}
                           >
-                            Pay Now
+                            Pay
                           </Button>
                         )}
                         {invoice.status === InvoiceStatus.Paid && invoice.paidDate && (
                           <Typography variant="caption" color="text.secondary">
-                            Paid on {format(new Date(invoice.paidDate), 'MMM dd, yyyy')}
+                            {format(new Date(invoice.paidDate), 'MMM dd')}
                           </Typography>
                         )}
                       </TableCell>

@@ -114,7 +114,7 @@ const Notifications: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography variant="h4" fontWeight={600} mb={3}>
+      <Typography variant="h4" fontWeight={600} mb={3} sx={{ fontSize: { xs: '1.25rem', sm: '1.75rem', md: '2.125rem' } }}>
         My Notifications
       </Typography>
 
@@ -130,7 +130,7 @@ const Notifications: React.FC = () => {
             <Typography variant="body2" color="white" gutterBottom>
               Total Notifications
             </Typography>
-            <Typography variant="h3" fontWeight={700} color="white">
+            <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
               {notifications.length}
             </Typography>
           </CardContent>
@@ -140,7 +140,7 @@ const Notifications: React.FC = () => {
             <Typography variant="body2" color="white" gutterBottom>
               Sent
             </Typography>
-            <Typography variant="h3" fontWeight={700} color="white">
+            <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
               {sentCount}
             </Typography>
           </CardContent>
@@ -150,7 +150,7 @@ const Notifications: React.FC = () => {
             <Typography variant="body2" color="white" gutterBottom>
               Pending
             </Typography>
-            <Typography variant="h3" fontWeight={700} color="white">
+            <Typography variant="h3" fontWeight={700} color="white" sx={{ fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' } }}>
               {pendingCount}
             </Typography>
           </CardContent>
@@ -179,13 +179,13 @@ const Notifications: React.FC = () => {
                     '&:hover': { bgcolor: 'action.hover' },
                   }}
                 >
-                  <ListItemIcon>
+                  <ListItemIcon sx={{ display: { xs: 'none', sm: 'flex' }, minWidth: { sm: 40 } }}>
                     {getTypeIcon(notification.type)}
                   </ListItemIcon>
                   <ListItemText
                     primary={
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Typography variant="subtitle1" fontWeight={500}>
+                      <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                        <Typography variant="subtitle1" fontWeight={500} sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
                           {notification.subject}
                         </Typography>
                         <Chip

@@ -13,8 +13,6 @@ import {
   CircularProgress,
   Alert,
   Button,
-  Stack,
-  Avatar,
 } from '@mui/material';
 import { Event, Cancel } from '@mui/icons-material';
 import { appointmentService } from '../../services/appointmentService';
@@ -74,7 +72,7 @@ const AdminAppointments: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography variant="h4" fontWeight={600} mb={3}>
+      <Typography variant="h4" fontWeight={600} mb={3} sx={{ fontSize: { xs: '1.25rem', sm: '1.75rem', md: '2.125rem' } }}>
         Appointments
       </Typography>
 
@@ -93,52 +91,40 @@ const AdminAppointments: React.FC = () => {
             </Typography>
           </Box>
         ) : (
-          <TableContainer>
-            <Table>
+          <TableContainer sx={{ overflowX: 'auto' }}>
+            <Table size="small">
               <TableHead>
                 <TableRow>
                   <TableCell><strong>Patient</strong></TableCell>
-                  <TableCell><strong>Doctor</strong></TableCell>
-                  <TableCell><strong>Date & Time</strong></TableCell>
-                  <TableCell><strong>Duration</strong></TableCell>
-                  <TableCell><strong>Reason</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}><strong>Doctor</strong></TableCell>
+                  <TableCell><strong>Date</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}><strong>Duration</strong></TableCell>
+                  <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}><strong>Reason</strong></TableCell>
                   <TableCell><strong>Status</strong></TableCell>
-                  {!API_CONFIG.DEMO_MODE && <TableCell><strong>Actions</strong></TableCell>}
+                  {!API_CONFIG.DEMO_MODE && <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}><strong>Actions</strong></TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {appointments.map((apt) => (
                   <TableRow key={apt._id} hover>
-                    <TableCell>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Avatar sx={{ width: 36, height: 36, bgcolor: 'secondary.light' }}>
-                          {apt.patientName.split(' ').map(n => n[0]).join('')}
-                        </Avatar>
-                        <Box>
-                          <Typography variant="body2">{apt.patientName}</Typography>
-                          <Typography variant="caption" color="text.secondary">{apt.patientEmail}</Typography>
-                        </Box>
-                      </Stack>
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
+                      <Typography variant="body2" noWrap sx={{ maxWidth: { xs: 100, sm: 'none' } }}>{apt.patientName}</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', md: 'block' } }}>{apt.patientEmail}</Typography>
                     </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Avatar sx={{ width: 36, height: 36, bgcolor: 'primary.light' }}>
-                          {apt.doctorName.split(' ').map(n => n[0]).join('')}
-                        </Avatar>
-                        <Typography variant="body2">Dr. {apt.doctorName}</Typography>
-                      </Stack>
+                    <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                      <Typography variant="body2" noWrap>Dr. {apt.doctorName}</Typography>
                     </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {format(new Date(apt.appointmentDate), 'MMM dd, yyyy')}
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
+                      <Typography variant="body2" noWrap>
+                        {format(new Date(apt.appointmentDate), 'MMM dd')}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {format(new Date(apt.appointmentDate), 'h:mm a')}
                       </Typography>
                     </TableCell>
-                    <TableCell>{apt.duration} min</TableCell>
-                    <TableCell>{apt.reason}</TableCell>
-                    <TableCell>
+                    <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>{apt.duration} min</TableCell>
+                    <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>{apt.reason}</TableCell>
+                    <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
                       <Chip
                         label={apt.status}
                         color={getStatusColor(apt.status)}
@@ -146,7 +132,7 @@ const AdminAppointments: React.FC = () => {
                       />
                     </TableCell>
                     {!API_CONFIG.DEMO_MODE && (
-                      <TableCell>
+                      <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>
                         {apt.status.toLowerCase() === 'scheduled' && (
                           <Button
                             size="small"
