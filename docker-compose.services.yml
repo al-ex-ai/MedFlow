@@ -4,8 +4,9 @@ services:
     build:
       context: ./src/ApiGateway
       dockerfile: Dockerfile
+    mem_limit: 1g
     ports:
-      - "5100:80"
+      - "127.0.0.1:5100:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__SqlServer=Server=sqlserver;Database=master;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=true
@@ -20,14 +21,22 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - DemoMode=${DEMO_MODE:-false}
     depends_on:
-      - sqlserver
-      - mongodb
-      - redis
-      - rabbitmq
-      - patient-service
-      - appointment-service
-      - billing-service
-      - notification-service
+      sqlserver:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      patient-service:
+        condition: service_started
+      appointment-service:
+        condition: service_started
+      billing-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
     networks:
       - micro-network
     healthcheck:
@@ -43,7 +52,7 @@ services:
       context: ./src/Services/PatientService/PatientService.API
       dockerfile: Dockerfile
     ports:
-      - "5125:80"
+      - "127.0.0.1:5125:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=PatientDb;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=true
@@ -54,9 +63,12 @@ services:
       - Seq__ServerUrl=http://seq:5341
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     depends_on:
-      - sqlserver
-      - redis
-      - rabbitmq
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - micro-network
     healthcheck:
@@ -72,7 +84,7 @@ services:
       context: ./src/Services/AppointmentService
       dockerfile: Dockerfile
     ports:
-      - "5126:80"
+      - "127.0.0.1:5126:80"
     environment:
       - NODE_ENV=production
       - PORT=80
@@ -81,9 +93,12 @@ services:
       - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     depends_on:
-      - mongodb
-      - redis
-      - rabbitmq
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - micro-network
     healthcheck:
@@ -99,7 +114,7 @@ services:
       context: ./src/Services/BillingService/BillingService.API
       dockerfile: Dockerfile
     ports:
-      - "5156:80"
+      - "127.0.0.1:5156:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=BillingDb;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=true
@@ -110,9 +125,12 @@ services:
       - Seq__ServerUrl=http://seq:5341
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     depends_on:
-      - sqlserver
-      - redis
-      - rabbitmq
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - micro-network
     healthcheck:
@@ -128,7 +146,7 @@ services:
       context: ./src/Services/NotificationService/NotificationService.API
       dockerfile: Dockerfile
     ports:
-      - "5160:80"
+      - "127.0.0.1:5160:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - MongoDB__ConnectionString=mongodb://admin:admin123@mongodb:27017
@@ -139,8 +157,10 @@ services:
       - Seq__ServerUrl=http://seq:5341
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     depends_on:
-      - mongodb
-      - rabbitmq
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - micro-network
     healthcheck:
@@ -158,9 +178,10 @@ services:
       args:
         VITE_DEMO_MODE: ${DEMO_MODE:-false}
     ports:
-      - "5180:80"
+      - "127.0.0.1:5180:80"
     depends_on:
-      - api-gateway
+      api-gateway:
+        condition: service_started
     networks:
       - micro-network
 

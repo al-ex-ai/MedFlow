@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 
 # Copy package files and install dependencies
@@ -10,7 +10,7 @@ RUN npm ci --only=production
 COPY . .
 
 # Runtime stage
-FROM node:20-alpine
+FROM node:22-alpine
 WORKDIR /app
 
 # Copy from build stage

@@ -52,6 +52,14 @@ var appointmentServiceUrl = builder.Configuration["ServiceUrls:AppointmentServic
 var billingServiceUrl = builder.Configuration["ServiceUrls:BillingService"] ?? "http://localhost:5056";
 var notificationServiceUrl = builder.Configuration["ServiceUrls:NotificationService"] ?? "http://localhost:5060";
 
+// One long-lived RabbitMQ connection. The health check factory below is invoked on every
+// probe, so building a connection inline leaked one undisposed IConnection per probe
+// (~2/min at a 30s evaluation interval). Automatic recovery is on by default in
+// RabbitMQ.Client v7, so a singleton survives broker restarts.
+builder.Services.AddSingleton<RabbitMQ.Client.IConnection>(_ =>
+    new RabbitMQ.Client.ConnectionFactory { Uri = new Uri(rabbitConnection) }
+        .CreateConnectionAsync().GetAwaiter().GetResult());
+
 // Add health checks for infrastructure
 builder.Services.AddHealthChecks()
     .AddSqlServer(
@@ -67,14 +75,7 @@ builder.Services.AddHealthChecks()
         name: "redis",
         tags: ["cache", "infrastructure"])
     .AddRabbitMQ(
-        sp =>
-        {
-            var factory = new RabbitMQ.Client.ConnectionFactory
-            {
-                Uri = new Uri(rabbitConnection)
-            };
-            return factory.CreateConnectionAsync().GetAwaiter().GetResult();
-        },
+        sp => sp.GetRequiredService<RabbitMQ.Client.IConnection>(),
         name: "rabbitmq",
         tags: ["messaging", "infrastructure"])
     // Microservices health endpoints
