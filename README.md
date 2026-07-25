@@ -118,7 +118,7 @@ React 19 dashboard built with:
 - **MUI 7** (Material UI) with Emotion styling
 - **React Router 7** for navigation
 - **Axios** for API calls
-- **Vite 7** + TypeScript for build tooling
+- **Vite 8** + TypeScript for build tooling
 - **Nginx** for production serving (Docker)
 
 ## Project Structure
@@ -197,18 +197,18 @@ cd src/Services/NotificationService/NotificationService.API && dotnet run
 
 | Category | Technologies |
 |----------|-------------|
-| **Backend** | .NET 10, C# 14, Node.js 22, Express 4 |
-| **Frontend** | React 19, TypeScript 5.9, MUI 7, Vite 7 |
+| **Backend** | .NET 10, C# 14, Node.js 22, Express 5 |
+| **Frontend** | React 19, TypeScript 5.9, MUI 7, Vite 8 |
 | **Databases** | SQL Server 2022, MongoDB 7 |
 | **Messaging** | RabbitMQ 3, MassTransit 8 |
 | **Caching** | Redis 7 |
 | **Gateway** | YARP 2.3 |
 | **Discovery** | Consul |
-| **ORM/ODM** | EF Core 10, Mongoose 8, MongoDB.Driver 3 |
+| **ORM/ODM** | EF Core 10, Mongoose 9, MongoDB.Driver 3 |
 | **Resilience** | Polly 8 |
 | **Logging** | Serilog 10, Winston 3, Seq |
 | **Metrics** | prometheus-net, prom-client, Prometheus, Grafana |
-| **Tracing** | OpenTelemetry 1.14, Jaeger |
+| **Tracing** | OpenTelemetry 1.17, Jaeger |
 | **Health** | AspNetCore.HealthChecks 9 |
 | **Containers** | Docker, Docker Compose |
 
