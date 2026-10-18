@@ -42,6 +42,9 @@ yarn-error.log*
 
 # Docker volumes data (not the compose file itself)
 **/data/
+# Service source folders named Data/ are code, not volumes. Git on Windows matches
+# the rule above case-insensitively, so re-include them explicitly.
+!src/Services/**/Data/
 
 # Build outputs
 dist/
