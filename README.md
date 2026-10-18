@@ -1,10 +1,14 @@
 # MedFlow
 
-**Production-grade polyglot microservices for healthcare — built with .NET 10, Node.js 22, and a full observability stack.**
+**Production-grade polyglot microservices for healthcare, built with .NET 10, Node.js 22, and a full observability stack.**
 
 A distributed system reference architecture demonstrating enterprise microservices patterns: event-driven communication via MassTransit/RabbitMQ, Saga orchestration, circuit breakers with Polly, Consul service discovery, polyglot persistence (SQL Server + MongoDB), and end-to-end observability with Serilog, Prometheus, Grafana, Jaeger, and Seq.
 
 Built entirely through AI-assisted pair programming.
+
+**Live demo:** [medflow.al-ex.ai](https://medflow.al-ex.ai) (demo users are listed on the sign-in page)
+
+![MedFlow admin dashboard with patients, appointments, invoices and notifications](docs/screenshot.png)
 
 ---
 
@@ -54,7 +58,7 @@ Built entirely through AI-assisted pair programming.
 | **Patient Service** | .NET 10 | SQL Server | Redis | EF Core, MassTransit, Polly, Serilog, OpenTelemetry, Consul |
 | **Appointment Service** | Node.js 22 | MongoDB | Redis | Express, Mongoose, amqplib, Winston, OpenTelemetry, prom-client |
 | **Billing Service** | .NET 10 | SQL Server | Redis | EF Core, MassTransit, Polly, Serilog, OpenTelemetry |
-| **Notification Service** | .NET 10 | MongoDB | — | MongoDB.Driver, MassTransit, Serilog, OpenTelemetry |
+| **Notification Service** | .NET 10 | MongoDB | None | MongoDB.Driver, MassTransit, Serilog, OpenTelemetry |
 
 ## Infrastructure
 
@@ -87,7 +91,7 @@ Built entirely through AI-assisted pair programming.
 |---------|---------------|
 | **Event-Driven Architecture** | MassTransit publish/subscribe over RabbitMQ |
 | **Saga Orchestration** | Cross-service workflow coordination (Patient → Appointment → Billing → Notification) |
-| **Circuit Breaker** | Polly (.NET) — prevent cascade failures across service boundaries |
+| **Circuit Breaker** | Polly (.NET): prevent cascade failures across service boundaries |
 | **CQRS** | Separate command and query pipelines |
 | **Service Discovery** | Consul with dynamic registration and health checks |
 | **API Gateway** | YARP reverse proxy with per-cluster routing |
@@ -214,9 +218,9 @@ cd src/Services/NotificationService/NotificationService.API && dotnet run
 
 ## Development Phases
 
-- **Phase 1** — Core services (Patient, Appointment) + infrastructure + monitoring stack
-- **Phase 2** — Billing, Notification services + Saga orchestration + circuit breakers
-- **Phase 3** — Authentication, authorization + React dashboard
+- **Phase 1**: Core services (Patient, Appointment) + infrastructure + monitoring stack
+- **Phase 2**: Billing, Notification services + Saga orchestration + circuit breakers
+- **Phase 3**: Authentication, authorization + React dashboard
 
 ## Documentation
 
