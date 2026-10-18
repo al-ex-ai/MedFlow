@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: Lint (report only)
+        run: npm run lint || true
+      - run: npm run build
+
+  dotnet:
+    name: Build ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - src/ApiGateway/ApiGateway.csproj
+          - src/Services/PatientService/PatientService.API/PatientService.API.csproj
+          - src/Services/BillingService/BillingService.API/BillingService.API.csproj
+          - src/Services/NotificationService/NotificationService.API/NotificationService.API.csproj
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet build ${{ matrix.project }} -c Release
+
+  appointment-service:
+    name: Appointment service (Node)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: src/Services/AppointmentService
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/Services/AppointmentService/package-lock.json
+      - run: npm ci
+      - name: Syntax check
+        run: node --check src/index.js
