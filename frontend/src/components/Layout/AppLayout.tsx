@@ -30,8 +30,8 @@ import {
   Brightness7,
   Info,
 } from '@mui/icons-material';
-import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
+import { useAuth } from '../../context/auth';
+import { useTheme } from '../../context/theme';
 import { API_CONFIG } from '../../config/api';
 
 const DRAWER_WIDTH = 240;

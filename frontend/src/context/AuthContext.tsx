@@ -1,17 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '../types';
+import React, { useState, ReactNode } from 'react';
+import { Patient, User } from '../types';
 import { API_ENDPOINTS } from '../config/api';
-
-interface AuthContextType {
-  user: User | null;
-  login: (email: string) => Promise<void>;
-  logout: () => void;
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  isLoading: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from './auth';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
@@ -19,18 +9,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const storedUser = localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
   });
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Mark loading as complete after initial render
-    setIsLoading(false);
-  }, []);
+  // The session is restored synchronously above, so there is nothing left to wait for.
+  const isLoading = false;
 
   const login = async (email: string) => {
     // Mock authentication logic
     const isAdmin = email.toLowerCase().includes('admin');
 
-    let userData: User = {
+    const userData: User = {
       email,
       role: isAdmin ? 'admin' : 'patient',
     };
@@ -39,8 +25,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!isAdmin) {
       try {
         const response = await fetch(API_ENDPOINTS.PATIENTS);
-        const patients = await response.json();
-        const patient = patients.find((p: any) => p.email.toLowerCase() === email.toLowerCase());
+        const patients: Patient[] = await response.json();
+        const patient = patients.find((p) => p.email.toLowerCase() === email.toLowerCase());
 
         if (patient) {
           userData.patientId = patient.id;
@@ -77,12 +63,4 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };

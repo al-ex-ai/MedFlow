@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Grid,
   Paper,
@@ -34,6 +34,7 @@ import { billingService } from '../../services/billingService';
 import { notificationService } from '../../services/notificationService';
 import { Patient, Appointment, Invoice, Notification, InvoiceStatus } from '../../types';
 import { format } from 'date-fns';
+import { errorMessage } from '../../utils/errors';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -44,11 +45,7 @@ const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -62,13 +59,18 @@ const AdminDashboard: React.FC = () => {
       setAppointments(appointmentsData);
       setInvoices(invoicesData);
       setNotifications(notificationsData);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading dashboard data:', err);
-      setError(err.message || 'Failed to load dashboard data');
+      setError(errorMessage(err, 'Failed to load dashboard data'));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Start loading after the effect body so the loader's state updates do not cascade renders.
+    void Promise.resolve().then(loadDashboardData);
+  }, [loadDashboardData]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {

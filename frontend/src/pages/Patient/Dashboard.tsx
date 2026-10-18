@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   Grid,
   Paper,
@@ -38,12 +38,13 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import dayjs, { Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/auth';
 import { appointmentService } from '../../services/appointmentService';
 import { billingService } from '../../services/billingService';
 import { notificationService } from '../../services/notificationService';
 import { Appointment, Invoice, Notification, InvoiceStatus } from '../../types';
 import { format } from 'date-fns';
+import { errorMessage } from '../../utils/errors';
 
 // Custom day component to highlight days with appointments
 function AppointmentDay(
@@ -82,11 +83,7 @@ const PatientDashboard: React.FC = () => {
   const [error, setError] = useState('');
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -104,13 +101,18 @@ const PatientDashboard: React.FC = () => {
       setAppointments(appointmentsData.slice(0, 5));
       setInvoices(invoicesData.slice(0, 5));
       setNotifications(notificationsData.slice(0, 5));
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading dashboard data:', err);
-      setError(err.message || 'Failed to load dashboard data');
+      setError(errorMessage(err, 'Failed to load dashboard data'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    // Start loading after the effect body so the loader's state updates do not cascade renders.
+    void Promise.resolve().then(loadDashboardData);
+  }, [loadDashboardData]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -323,7 +325,7 @@ const PatientDashboard: React.FC = () => {
                 slotProps={{
                   day: {
                     appointmentDates,
-                  } as any,
+                  } as Partial<PickersDayProps> & { appointmentDates: string[] },
                 }}
                 sx={{ width: '100%' }}
               />

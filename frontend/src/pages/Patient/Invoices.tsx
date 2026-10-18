@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -18,11 +18,12 @@ import {
   Stack,
 } from '@mui/material';
 import { Receipt, Payment } from '@mui/icons-material';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/auth';
 import { billingService } from '../../services/billingService';
 import { Invoice, InvoiceStatus } from '../../types';
 import { API_CONFIG } from '../../config/api';
 import { format } from 'date-fns';
+import { errorMessage } from '../../utils/errors';
 
 const Invoices: React.FC = () => {
   const { user } = useAuth();
@@ -30,11 +31,7 @@ const Invoices: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadInvoices();
-  }, []);
-
-  const loadInvoices = async () => {
+  const loadInvoices = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -43,20 +40,25 @@ const Invoices: React.FC = () => {
       }
       const data = await billingService.getByPatientId(user.patientId);
       setInvoices(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading invoices:', err);
-      setError(err.message || 'Failed to load invoices');
+      setError(errorMessage(err, 'Failed to load invoices'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    // Start loading after the effect body so the loader's state updates do not cascade renders.
+    void Promise.resolve().then(loadInvoices);
+  }, [loadInvoices]);
 
   const handlePayInvoice = async (id: string) => {
     try {
       await billingService.markAsPaid(id);
       loadInvoices();
-    } catch (err: any) {
-      setError(err.message || 'Failed to process payment');
+    } catch (err) {
+      setError(errorMessage(err, 'Failed to process payment'));
     }
   };
 

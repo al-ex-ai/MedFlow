@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -22,37 +22,39 @@ import { billingService } from '../../services/billingService';
 import { Invoice, InvoiceStatus } from '../../types';
 import { API_CONFIG } from '../../config/api';
 import { format } from 'date-fns';
+import { errorMessage } from '../../utils/errors';
 
 const AdminBilling: React.FC = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadInvoices();
-  }, []);
-
-  const loadInvoices = async () => {
+  const loadInvoices = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
       const data = await billingService.getAll();
       setInvoices(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading invoices:', err);
-      setError(err.message || 'Failed to load invoices');
+      setError(errorMessage(err, 'Failed to load invoices'));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Start loading after the effect body so the loader's state updates do not cascade renders.
+    void Promise.resolve().then(loadInvoices);
+  }, [loadInvoices]);
 
   const handleMarkAsPaid = async (id: string) => {
     try {
       setError('');
       await billingService.markAsPaid(id);
       loadInvoices();
-    } catch (err: any) {
-      setError(err.message || 'Failed to mark invoice as paid');
+    } catch (err) {
+      setError(errorMessage(err, 'Failed to mark invoice as paid'));
     }
   };
 

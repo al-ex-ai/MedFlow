@@ -1,27 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
+import React, { useState, ReactNode, useMemo } from 'react';
 import { ThemeProvider as MuiThemeProvider, createTheme, PaletteMode } from '@mui/material';
 import { CssBaseline } from '@mui/material';
-
-interface ThemeContextType {
-  mode: PaletteMode;
-  toggleTheme: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import { ThemeContext } from './theme';
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [mode, setMode] = useState<PaletteMode>('dark');
-
-  useEffect(() => {
-    // Load theme preference from localStorage, default to dark mode
-    const savedMode = localStorage.getItem('themeMode') as PaletteMode;
-    if (savedMode) {
-      setMode(savedMode);
-    } else {
-      // Set dark mode as default
-      localStorage.setItem('themeMode', 'dark');
-    }
-  }, []);
+  // Load theme preference from localStorage, default to dark mode
+  const [mode, setMode] = useState<PaletteMode>(
+    () => (localStorage.getItem('themeMode') as PaletteMode | null) ?? 'dark'
+  );
 
   const toggleTheme = () => {
     setMode((prevMode) => {
@@ -87,12 +73,4 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       </MuiThemeProvider>
     </ThemeContext.Provider>
   );
-};
-
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
 };

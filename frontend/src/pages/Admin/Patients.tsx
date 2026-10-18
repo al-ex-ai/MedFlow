@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -27,6 +27,7 @@ import { patientService } from '../../services/patientService';
 import { Patient } from '../../types';
 import { API_CONFIG } from '../../config/api';
 import { format } from 'date-fns';
+import { errorMessage } from '../../utils/errors';
 
 const AdminPatients: React.FC = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -42,23 +43,24 @@ const AdminPatients: React.FC = () => {
     address: '',
   });
 
-  useEffect(() => {
-    loadPatients();
-  }, []);
-
-  const loadPatients = async () => {
+  const loadPatients = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
       const data = await patientService.getAll();
       setPatients(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading patients:', err);
-      setError(err.message || 'Failed to load patients');
+      setError(errorMessage(err, 'Failed to load patients'));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Start loading after the effect body so the loader's state updates do not cascade renders.
+    void Promise.resolve().then(loadPatients);
+  }, [loadPatients]);
 
   const handleCreatePatient = async () => {
     try {
@@ -67,8 +69,8 @@ const AdminPatients: React.FC = () => {
       setOpenDialog(false);
       setNewPatient({ firstName: '', lastName: '', email: '', dateOfBirth: '', phoneNumber: '', address: '' });
       loadPatients();
-    } catch (err: any) {
-      setError(err.message || 'Failed to create patient');
+    } catch (err) {
+      setError(errorMessage(err, 'Failed to create patient'));
     }
   };
 
@@ -77,8 +79,8 @@ const AdminPatients: React.FC = () => {
       setError('');
       await patientService.delete(id);
       loadPatients();
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete patient');
+    } catch (err) {
+      setError(errorMessage(err, 'Failed to delete patient'));
     }
   };
 

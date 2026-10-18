@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -19,37 +19,39 @@ import { appointmentService } from '../../services/appointmentService';
 import { Appointment } from '../../types';
 import { API_CONFIG } from '../../config/api';
 import { format } from 'date-fns';
+import { errorMessage } from '../../utils/errors';
 
 const AdminAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadAppointments();
-  }, []);
-
-  const loadAppointments = async () => {
+  const loadAppointments = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
       const data = await appointmentService.getAll();
       setAppointments(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading appointments:', err);
-      setError(err.message || 'Failed to load appointments');
+      setError(errorMessage(err, 'Failed to load appointments'));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    // Start loading after the effect body so the loader's state updates do not cascade renders.
+    void Promise.resolve().then(loadAppointments);
+  }, [loadAppointments]);
 
   const handleCancelAppointment = async (id: string) => {
     try {
       setError('');
       await appointmentService.cancel(id);
       loadAppointments();
-    } catch (err: any) {
-      setError(err.message || 'Failed to cancel appointment');
+    } catch (err) {
+      setError(errorMessage(err, 'Failed to cancel appointment'));
     }
   };
 

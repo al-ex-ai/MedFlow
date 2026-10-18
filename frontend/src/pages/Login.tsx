@@ -11,8 +11,9 @@ import {
   IconButton,
 } from '@mui/material';
 import { LocalHospital, Brightness4, Brightness7 } from '@mui/icons-material';
-import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/auth';
+import { useTheme } from '../context/theme';
+import { errorMessage } from '../utils/errors';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -34,8 +35,8 @@ const Login: React.FC = () => {
       } else {
         navigate('/patient');
       }
-    } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your email.');
+    } catch (err) {
+      setError(errorMessage(err, 'Login failed. Please check your email.'));
     } finally {
       setLoading(false);
     }

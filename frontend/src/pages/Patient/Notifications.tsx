@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -24,10 +24,11 @@ import {
   Error as ErrorIcon,
   Schedule,
 } from '@mui/icons-material';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/auth';
 import { notificationService } from '../../services/notificationService';
 import { Notification, NotificationType, NotificationStatus } from '../../types';
 import { format, formatDistanceToNow } from 'date-fns';
+import { errorMessage } from '../../utils/errors';
 
 const Notifications: React.FC = () => {
   const { user } = useAuth();
@@ -35,11 +36,7 @@ const Notifications: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadNotifications();
-  }, []);
-
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -48,13 +45,18 @@ const Notifications: React.FC = () => {
       }
       const data = await notificationService.getByEmail(user.email);
       setNotifications(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading notifications:', err);
-      setError(err.message || 'Failed to load notifications');
+      setError(errorMessage(err, 'Failed to load notifications'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    // Start loading after the effect body so the loader's state updates do not cascade renders.
+    void Promise.resolve().then(loadNotifications);
+  }, [loadNotifications]);
 
   const getTypeIcon = (type: number) => {
     switch (type) {

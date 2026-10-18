@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -21,11 +21,12 @@ import {
   Stack,
 } from '@mui/material';
 import { Add, CalendarToday } from '@mui/icons-material';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/auth';
 import { appointmentService } from '../../services/appointmentService';
 import { Appointment } from '../../types';
 import { API_CONFIG } from '../../config/api';
 import { format } from 'date-fns';
+import { errorMessage } from '../../utils/errors';
 
 const Appointments: React.FC = () => {
   const { user } = useAuth();
@@ -40,11 +41,7 @@ const Appointments: React.FC = () => {
     notes: '',
   });
 
-  useEffect(() => {
-    loadAppointments();
-  }, []);
-
-  const loadAppointments = async () => {
+  const loadAppointments = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -53,13 +50,18 @@ const Appointments: React.FC = () => {
       }
       const data = await appointmentService.getByPatientId(user.patientId);
       setAppointments(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error loading appointments:', err);
-      setError(err.message || 'Failed to load appointments');
+      setError(errorMessage(err, 'Failed to load appointments'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    // Start loading after the effect body so the loader's state updates do not cascade renders.
+    void Promise.resolve().then(loadAppointments);
+  }, [loadAppointments]);
 
   const handleCreateAppointment = async () => {
     try {
@@ -80,8 +82,8 @@ const Appointments: React.FC = () => {
       setOpenDialog(false);
       setNewAppointment({ doctorName: '', appointmentDate: '', reason: '', notes: '' });
       loadAppointments();
-    } catch (err: any) {
-      setError(err.message || 'Failed to create appointment');
+    } catch (err) {
+      setError(errorMessage(err, 'Failed to create appointment'));
     }
   };
 
