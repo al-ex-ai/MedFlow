@@ -112,7 +112,7 @@ const AdminAppointments: React.FC = () => {
                       <Typography variant="caption" color="text.secondary" sx={{ display: { xs: 'none', md: 'block' } }}>{apt.patientEmail}</Typography>
                     </TableCell>
                     <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                      <Typography variant="body2" noWrap>Dr. {apt.doctorName}</Typography>
+                      <Typography variant="body2" noWrap>{apt.doctorName}</Typography>
                     </TableCell>
                     <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
                       <Typography variant="body2" noWrap>

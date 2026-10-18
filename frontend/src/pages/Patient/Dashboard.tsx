@@ -353,7 +353,7 @@ const PatientDashboard: React.FC = () => {
                       >
                         <AccessTime sx={{ fontSize: 16, mr: 1, color: 'primary.main' }} />
                         <ListItemText
-                          primary={`Dr. ${apt.doctorName}`}
+                          primary={apt.doctorName}
                           secondary={`${format(new Date(apt.appointmentDate), 'h:mm a')} - ${apt.reason}`}
                           primaryTypographyProps={{ variant: 'body2', fontWeight: 500 }}
                           secondaryTypographyProps={{ variant: 'caption' }}
@@ -401,7 +401,7 @@ const PatientDashboard: React.FC = () => {
                             <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.light', fontSize: '0.75rem', display: { xs: 'none', sm: 'flex' } }}>
                               {apt.doctorName.split(' ').map(n => n[0]).join('')}
                             </Avatar>
-                            <Typography variant="body2">Dr. {apt.doctorName}</Typography>
+                            <Typography variant="body2">{apt.doctorName}</Typography>
                           </Stack>
                         </TableCell>
                         <TableCell>

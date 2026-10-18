@@ -158,7 +158,7 @@ const Appointments: React.FC = () => {
                 {appointments.map((apt) => (
                   <TableRow key={apt._id} hover>
                     <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
-                      <Typography variant="body2" noWrap sx={{ maxWidth: { xs: 100, sm: 'none' } }}>Dr. {apt.doctorName}</Typography>
+                      <Typography variant="body2" noWrap sx={{ maxWidth: { xs: 100, sm: 'none' } }}>{apt.doctorName}</Typography>
                     </TableCell>
                     <TableCell sx={{ px: { xs: 1, sm: 2 } }}>
                       <Typography variant="body2" noWrap>

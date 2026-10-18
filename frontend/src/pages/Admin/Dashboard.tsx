@@ -286,7 +286,7 @@ const AdminDashboard: React.FC = () => {
                             <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.light', fontSize: '0.75rem' }}>
                               {apt.doctorName.split(' ').map(n => n[0]).join('')}
                             </Avatar>
-                            <Typography variant="body2">Dr. {apt.doctorName}</Typography>
+                            <Typography variant="body2">{apt.doctorName}</Typography>
                           </Stack>
                         </TableCell>
                         <TableCell>

@@ -113,7 +113,7 @@ const Login: React.FC = () => {
                 <br />
                 Admin: admin@medflow.com
                 <br />
-                Patient: john.doe@example.com, jane.smith@example.com
+                Patient: sarah.johnson@email.com
               </Typography>
             </Box>
           </Box>
