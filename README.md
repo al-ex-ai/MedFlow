@@ -229,4 +229,8 @@ cd src/Services/NotificationService/NotificationService.API && dotnet run
 
 ## License
 
-MIT
+MIT. See [LICENSE](LICENSE).
+
+## Author
+
+Alex Husniddinov
