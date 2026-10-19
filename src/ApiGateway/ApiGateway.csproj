@@ -15,11 +15,11 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.17.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.13" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.20.0" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.20.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.20.0" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
@@ -27,7 +27,7 @@
   <!-- Transitive pins: MongoDB.Driver and HealthChecks.UI are already at their latest
        release but still resolve vulnerable versions of these. Remove once upstream bumps. -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />  <!-- GHSA-v5pm-xwqc-g5wc (high), patched in 2.7.5 -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.12.2" />  <!-- GHSA-v5pm-xwqc-g5wc (high), patched in 2.7.5 -->
     <PackageReference Include="Snappier" Version="1.3.1" />  <!-- GHSA-pggp-6c3x-2xmx (high) -->
     <PackageReference Include="SharpCompress" Version="1.0.0" />  <!-- GHSA-6c8g-7p36-r338 (moderate) -->
     <PackageReference Include="KubernetesClient" Version="19.0.2" />  <!-- GHSA-w7r3-mgwf-4mqq (moderate) -->
